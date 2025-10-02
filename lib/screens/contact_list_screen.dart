@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 
 // Definición simple de un Contacto
 class Contact {
@@ -18,10 +18,30 @@ class Contact {
 
 // Datos de prueba
 List<Contact> mockContacts = [
-  Contact(id: 'c1', name: 'Ana Rodríguez', phoneNumber: '+52 1111', avatarColor: AppColors.avatarPurple),
-  Contact(id: 'c2', name: 'Carlos García', phoneNumber: '+52 2222', avatarColor: AppColors.avatarBlue),
-  Contact(id: 'c3', name: 'Elena Torres', phoneNumber: '+52 3333', avatarColor: AppColors.avatarYellow),
-  Contact(id: 'c4', name: 'Fernando Lima', phoneNumber: '+52 4444', avatarColor: AppColors.avatarPink),
+  Contact(
+    id: 'c1',
+    name: 'Ana Rodríguez',
+    phoneNumber: '+52 1111',
+    avatarColor: AppColors.avatarPurple,
+  ),
+  Contact(
+    id: 'c2',
+    name: 'Carlos García',
+    phoneNumber: '+52 2222',
+    avatarColor: AppColors.avatarBlue,
+  ),
+  Contact(
+    id: 'c3',
+    name: 'Elena Torres',
+    phoneNumber: '+52 3333',
+    avatarColor: AppColors.avatarYellow,
+  ),
+  Contact(
+    id: 'c4',
+    name: 'Fernando Lima',
+    phoneNumber: '+52 4444',
+    avatarColor: AppColors.avatarPink,
+  ),
 ];
 
 class ContactListScreen extends StatelessWidget {
@@ -42,7 +62,10 @@ class ContactListScreen extends StatelessWidget {
         ),
         title: const Text(
           'Contactos',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -88,7 +111,10 @@ void _showContactOptions(BuildContext context) {
         child: Wrap(
           children: <Widget>[
             ListTile(
-              leading: const Icon(Icons.group_add, color: AppColors.primaryColor),
+              leading: const Icon(
+                Icons.group_add,
+                color: AppColors.primaryColor,
+              ),
               title: const Text('Crear Grupo'),
               onTap: () {
                 Navigator.pop(bc);
@@ -96,7 +122,10 @@ void _showContactOptions(BuildContext context) {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.person_add, color: AppColors.primaryColor),
+              leading: const Icon(
+                Icons.person_add,
+                color: AppColors.primaryColor,
+              ),
               title: const Text('Agregar Contacto'),
               onTap: () {
                 Navigator.pop(bc);
@@ -137,7 +166,11 @@ class ContactListItem extends StatelessWidget {
                 backgroundColor: contact.avatarColor,
                 child: Text(
                   contact.name[0].toUpperCase(),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20),
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
               ),
               const SizedBox(width: 16),
@@ -149,7 +182,10 @@ class ContactListItem extends StatelessWidget {
                     Text(
                       contact.name,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: AppColors.textColor,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(

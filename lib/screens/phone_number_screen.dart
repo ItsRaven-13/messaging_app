@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 import 'main_chat_screen.dart'; // Importa la pantalla principal
 
 class PhoneNumberScreen extends StatelessWidget {
@@ -10,7 +10,10 @@ class PhoneNumberScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: const Text('Verificación', style: TextStyle(color: AppColors.textColor)),
+        title: const Text(
+          'Verificación',
+          style: TextStyle(color: AppColors.textColor),
+        ),
         backgroundColor: AppColors.primaryColor,
       ),
       body: Center(
@@ -52,7 +55,9 @@ class PhoneNumberScreen extends StatelessWidget {
                   // Navega a la pantalla principal de chats
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainChatScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const MainChatScreen(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -64,10 +69,7 @@ class PhoneNumberScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Ingresar',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.textColor,
-                  ),
+                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
                 ),
               ),
 

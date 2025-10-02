@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 import 'main_chat_screen.dart'; // Para reutilizar el modelo de Chat
 
 // Definiciones de Message (si no las has puesto en un archivo separado)
@@ -19,22 +19,24 @@ class Message {
 
 List<Message> mockMessages = [
   Message(
-      senderId: 'contact1',
-      text: '¿Ya estás?',
-      timestamp: DateTime(2025, 9, 25, 10, 24),
-      isMe: false),
+    senderId: 'contact1',
+    text: '¿Ya estás?',
+    timestamp: DateTime(2025, 9, 25, 10, 24),
+    isMe: false,
+  ),
   Message(
-      senderId: 'myId',
-      text: 'Si, apenas voy saliendo del trabajo. Tarde un poco, disculpa.',
-      timestamp: DateTime(2025, 9, 25, 10, 25),
-      isMe: true),
+    senderId: 'myId',
+    text: 'Si, apenas voy saliendo del trabajo. Tarde un poco, disculpa.',
+    timestamp: DateTime(2025, 9, 25, 10, 25),
+    isMe: true,
+  ),
   Message(
-      senderId: 'contact1',
-      text: 'Ok, con cuidado. Te espero en 15 minutos. Me avisas cuando llegues.',
-      timestamp: DateTime(2025, 9, 25, 10, 25, 30),
-      isMe: false),
+    senderId: 'contact1',
+    text: 'Ok, con cuidado. Te espero en 15 minutos. Me avisas cuando llegues.',
+    timestamp: DateTime(2025, 9, 25, 10, 25, 30),
+    isMe: false,
+  ),
 ];
-
 
 class ChatScreen extends StatelessWidget {
   final Chat chat;
@@ -55,7 +57,10 @@ class ChatScreen extends StatelessWidget {
         ),
         title: Text(
           chat.name,
-          style: const TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: AppColors.textColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
@@ -72,7 +77,10 @@ class ChatScreen extends StatelessWidget {
         // Fondo de chat degradado como en el mockup
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFFE0F7FA), Color(0xFFF0F9FF)], // Ligeros tonos azules
+            colors: [
+              Color(0xFFE0F7FA),
+              Color(0xFFF0F9FF),
+            ], // Ligeros tonos azules
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
@@ -85,12 +93,13 @@ class ChatScreen extends StatelessWidget {
                 reverse: true, // Muestra los mensajes de abajo hacia arriba
                 itemCount: mockMessages.length,
                 itemBuilder: (context, index) {
-                  final message = mockMessages.reversed.toList()[index]; // Mostrar en orden cronológico
+                  final message = mockMessages.reversed
+                      .toList()[index]; // Mostrar en orden cronológico
                   return MessageBubble(message: message);
                 },
               ),
             ),
-            
+
             // Área de entrada de texto
             const _ChatInputArea(),
           ],
@@ -108,24 +117,34 @@ class MessageBubble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Alinear a la derecha si es mi mensaje, a la izquierda si es del contacto
-    final alignment = message.isMe ? Alignment.centerRight : Alignment.centerLeft;
-    final color = message.isMe ? AppColors.secondaryColor : Colors.white; // Rosa vs Blanco
+    final alignment = message.isMe
+        ? Alignment.centerRight
+        : Alignment.centerLeft;
+    final color = message.isMe
+        ? AppColors.secondaryColor
+        : Colors.white; // Rosa vs Blanco
     final textColor = AppColors.textColor;
 
     return Container(
       alignment: alignment,
       padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 5.0),
       child: Column(
-        crossAxisAlignment: message.isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: message.isMe
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Container(
-            constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75,
+            ),
             decoration: BoxDecoration(
               color: color,
               borderRadius: BorderRadius.only(
                 topLeft: const Radius.circular(12),
                 topRight: const Radius.circular(12),
-                bottomLeft: Radius.circular(message.isMe ? 12 : 0), // Lógica del piquito
+                bottomLeft: Radius.circular(
+                  message.isMe ? 12 : 0,
+                ), // Lógica del piquito
                 bottomRight: Radius.circular(message.isMe ? 0 : 12),
               ),
               boxShadow: [
@@ -138,10 +157,7 @@ class MessageBubble extends StatelessWidget {
               ],
             ),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: Text(
-              message.text,
-              style: TextStyle(color: textColor),
-            ),
+            child: Text(message.text, style: TextStyle(color: textColor)),
           ),
           const SizedBox(height: 2),
           Text(
@@ -163,7 +179,8 @@ class _ChatInputArea extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10.0),
       decoration: const BoxDecoration(
-        color: AppColors.primaryColor, // La barra de entrada tiene el color azul claro
+        color: AppColors
+            .primaryColor, // La barra de entrada tiene el color azul claro
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -179,7 +196,7 @@ class _ChatInputArea extends StatelessWidget {
             icon: const Icon(Icons.mic, color: AppColors.textColor),
             onPressed: () {},
           ),
-          
+
           // Campo de texto
           Expanded(
             child: TextField(
@@ -187,7 +204,10 @@ class _ChatInputArea extends StatelessWidget {
                 hintText: 'Escribe un mensaje...',
                 filled: true,
                 fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
@@ -198,7 +218,7 @@ class _ChatInputArea extends StatelessWidget {
               },
             ),
           ),
-          
+
           // Botón de enviar
           IconButton(
             icon: const Icon(Icons.send, color: AppColors.textColor),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 import 'registration_screen.dart'; // Importa la pantalla de registro
 import 'main_chat_screen.dart'; // Importa la nueva pantalla de chats
 
@@ -80,7 +80,9 @@ class LoginScreen extends StatelessWidget {
                   // Navega a la pantalla principal de chats
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const MainChatScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const MainChatScreen(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -92,15 +94,12 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Ingresar',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.textColor,
-                  ),
+                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
                 ),
               ),
 
               const SizedBox(height: 20),
-              
+
               // Enlace para ir a la pantalla de registro
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -114,7 +113,9 @@ class LoginScreen extends StatelessWidget {
                       // Navega a la pantalla de registro
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const RegistrationScreen()),
+                        MaterialPageRoute(
+                          builder: (context) => const RegistrationScreen(),
+                        ),
                       );
                     },
                     child: const Text(

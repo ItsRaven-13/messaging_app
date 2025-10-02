@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 import 'phone_number_screen.dart'; // Importa la pantalla de verificación
 
 class RegistrationScreen extends StatelessWidget {
@@ -112,7 +112,9 @@ class RegistrationScreen extends StatelessWidget {
                   // Navega a la pantalla de verificación por SMS
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const PhoneNumberScreen()),
+                    MaterialPageRoute(
+                      builder: (context) => const PhoneNumberScreen(),
+                    ),
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -124,10 +126,7 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Registrarme',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.textColor,
-                  ),
+                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
                 ),
               ),
 

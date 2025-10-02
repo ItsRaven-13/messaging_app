@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart'; // Asegúrate de tener este archivo o los colores definidos
+import 'package:messaging_app/core/constants/app_colors.dart'; // Asegúrate de tener este archivo o los colores definidos
 
 class VerificationCodeScreen extends StatelessWidget {
   const VerificationCodeScreen({super.key});
@@ -9,7 +9,10 @@ class VerificationCodeScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: AppColors.backgroundColor,
       appBar: AppBar(
-        title: const Text('Verificación', style: TextStyle(color: AppColors.textColor)),
+        title: const Text(
+          'Verificación',
+          style: TextStyle(color: AppColors.textColor),
+        ),
         backgroundColor: AppColors.primaryColor,
       ),
       body: Center(
@@ -50,10 +53,7 @@ class VerificationCodeScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Ingresar',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: AppColors.textColor,
-                  ),
+                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
                 ),
               ),
 

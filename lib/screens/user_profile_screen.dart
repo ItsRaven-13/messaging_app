@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 
 class UserProfileScreen extends StatelessWidget {
   const UserProfileScreen({super.key});
@@ -19,7 +19,10 @@ class UserProfileScreen extends StatelessWidget {
         ),
         title: const Text(
           'Mi Perfil',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -44,14 +47,19 @@ class UserProfileScreen extends StatelessWidget {
                 // Botón para editar la imagen (no en el mockup, pero útil)
                 TextButton(
                   onPressed: () {},
-                  child: const Text('Cambiar foto de perfil', style: TextStyle(color: AppColors.primaryColor)),
+                  child: const Text(
+                    'Cambiar foto de perfil',
+                    style: TextStyle(color: AppColors.primaryColor),
+                  ),
                 ),
                 const SizedBox(height: 30),
 
                 // Tarjeta de información del perfil (simulando los campos de texto)
                 Card(
                   elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -78,7 +86,7 @@ class UserProfileScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 30),
-                
+
                 // Botón para editar (se podría usar el botón rosa)
                 ElevatedButton(
                   onPressed: () {
@@ -89,14 +97,14 @@ class UserProfileScreen extends StatelessWidget {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 40),
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 16,
+                      horizontal: 40,
+                    ),
                   ),
                   child: const Text(
                     'Guardar Cambios',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.textColor,
-                    ),
+                    style: TextStyle(fontSize: 16, color: AppColors.textColor),
                   ),
                 ),
               ],
@@ -114,7 +122,11 @@ class _ProfileField extends StatelessWidget {
   final String value;
   final IconData icon;
 
-  const _ProfileField({required this.label, required this.value, required this.icon});
+  const _ProfileField({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -126,9 +138,18 @@ class _ProfileField extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+              Text(
+                label,
+                style: TextStyle(color: Colors.grey[600], fontSize: 12),
+              ),
               const SizedBox(height: 4),
-              Text(value, style: const TextStyle(fontSize: 16, color: AppColors.textColor)),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: AppColors.textColor,
+                ),
+              ),
             ],
           ),
         ),

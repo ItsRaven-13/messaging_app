@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 import 'chat_screen.dart'; // Vamos a pre-importar la pantalla de chat
 import 'group_list_screen.dart'; // Para el menú de grupos
 import 'user_profile_screen.dart'; // Para el menú de perfil
@@ -58,7 +58,6 @@ List<Chat> mockChats = [
   // Puedes agregar más chats de prueba aquí
 ];
 
-
 // --- WIDGET DE LA PANTALLA PRINCIPAL ---
 class MainChatScreen extends StatelessWidget {
   const MainChatScreen({super.key});
@@ -79,7 +78,10 @@ class MainChatScreen extends StatelessWidget {
         ),
         title: const Text(
           'Mensajería',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -95,17 +97,23 @@ class MainChatScreen extends StatelessWidget {
               if (value == 'grupos') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const GroupListScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const GroupListScreen(),
+                  ),
                 );
               } else if (value == 'perfil') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const UserProfileScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const UserProfileScreen(),
+                  ),
                 );
               } else if (value == 'contactos') {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const ContactListScreen()),
+                  MaterialPageRoute(
+                    builder: (context) => const ContactListScreen(),
+                  ),
                 );
               }
             },
@@ -159,9 +167,7 @@ class ChatListItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0, // Elimina la sombra para un aspecto más plano
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.white, // Fondo blanco de la tarjeta
       child: InkWell(
         onTap: () {
@@ -185,9 +191,10 @@ class ChatListItem extends StatelessWidget {
                     : Text(
                         chat.name[0].toUpperCase(),
                         style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
                       ),
               ),
               const SizedBox(width: 16),
@@ -199,7 +206,10 @@ class ChatListItem extends StatelessWidget {
                     Text(
                       chat.name,
                       style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textColor),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                        color: AppColors.textColor,
+                      ),
                     ),
                     const SizedBox(height: 4),
                     Text(
@@ -224,7 +234,8 @@ class ChatListItem extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.secondaryColor, // Color rosa para el contador
+                        color: AppColors
+                            .secondaryColor, // Color rosa para el contador
                         borderRadius: BorderRadius.circular(12),
                       ),
                       constraints: const BoxConstraints(

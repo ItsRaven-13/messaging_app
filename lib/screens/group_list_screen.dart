@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 
 // Definición simple de un Grupo para simular datos
 class Group {
@@ -42,7 +42,6 @@ List<Group> mockGroups = [
   ),
 ];
 
-
 class GroupListScreen extends StatelessWidget {
   const GroupListScreen({super.key});
 
@@ -62,7 +61,10 @@ class GroupListScreen extends StatelessWidget {
         ),
         title: const Text(
           'Grupos',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColors.textColor,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
@@ -100,9 +102,7 @@ class GroupListItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -123,7 +123,10 @@ class GroupListItem extends StatelessWidget {
                   Text(
                     group.name,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: AppColors.textColor,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
