@@ -8,7 +8,7 @@ Una aplicación de mensajería en tiempo real construida con Flutter, diseñada 
 
 * **Mensajes en tiempo real**: Envía y recibe mensajes al instante.
 * **Interfaz de usuario intuitiva**: Diseño limpio y fácil de usar.
-* **Autenticación segura**: Registro e inicio de sesión de usuarios con Firebase.
+* **Autenticación segura**: Registro e inicio de sesión de usuarios con Firebase con SMS.
 * **Notificaciones push**: Recibe alertas de nuevos mensajes, incluso cuando la aplicación está cerrada.
 
 ---
@@ -23,23 +23,68 @@ Asegúrate de tener instalado lo siguiente:
 
 * **Flutter SDK**: [Guía de instalación](https://flutter.dev/docs/get-started/install)
 * **Un editor de código**: Como VS Code o Android Studio.
-* **Una cuenta de Firebase**: Para la base de datos y autenticación.
+* **Una cuenta de Firebase**: Ser invitado al proyecto por un administrador
+* **Node.js + npm**: Para usar la CLI de Firebase [Descargar](https://nodejs.org/es)
+* **Firebase CLI**: Se instala con:
+    ```bash
+    npm install -g firebase-tools
+    ```
+* **FlutterFire CLI**: Se instala con:
+    ```bash
+    dart pub global activate flutterfire_cli
+    ```
 
 ### Instalación
 
 1.  Clona el repositorio:
     ```bash
-    git clone [https://github.com/tu-usuario/nombre-del-repo.git](https://github.com/tu-usuario/nombre-del-repo.git)
+    git clone [Zaap](https://github.com/ItsRaven-13/messaging_app.git)
     ```
 2.  Navega a la carpeta del proyecto:
     ```bash
-    cd nombre-del-repo
+    cd messaging_app
     ```
 3.  Instala las dependencias:
     ```bash
     flutter pub get
     ```
-4.  Configura tu proyecto de Firebase y añade el archivo `google-services.json` (para Android) y `GoogleService-Info.plist` (para iOS) en las carpetas correspondientes.
+
+### Conexión con Firebase
+
+1.  Solicita acceso al proyecto Firebase
+Un administrador debe invitarte desde la consola de Firebase:  
+
+**Configuración del proyecto** > **Permisos** > **Agregar miembro**
+
+Usa la misma cuenta de Google que usarás para firebase login.
+
+2.  Inicia sesión en Firebase CLI
+    ```bash
+    firebase login
+    ```
+3.  Vincula el proyecto local con Firebase
+    ```bash
+    firebase use --add
+    ```
+Selecciona el proyecto de Firebase correspondiente
+
+4.  Configura FlutterFire
+    ```bash
+    flutterfire configure
+    ```
+
+Esto generará automáticamente:
+
+* android/app/**google-services.json**
+* ios/Runner/**GoogleService-Info.plist**
+* lib/**firebase_options.dart**
+
+### Ejecutar la app
+
+Una vez configurado, puedes ejecutar la app en tu dispositivo o emulador:
+    ```bash
+    flutter run
+    ```
 
 ---
 
@@ -50,9 +95,11 @@ Asegúrate de tener instalado lo siguiente:
 
 ---
 
-## Autor
+## Autores
 
-* **[Tu Nombre]** - Desarrollador - [Tu-usuario-en-GitHub](https://github.com/tu-usuario)
+* **[Huapilla Pérez Esteba]** - Desarrollador - [ItsRaven-13](https://github.com/ItsRaven-13)
+
+* **[Barrera Sánchez Uriel]** - Desarrollador - [Barrera1712](https://github.com/Barrera1712)
 
 ---
 
