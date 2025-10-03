@@ -10,5 +10,10 @@ final GoRouter appRouter = GoRouter(
       name: AppRoutes.welcome,
       builder: (context, state) => const LoginScreen(),
     ),
+    GoRoute(
+      path: '/${AppRoutes.noConnection}',
+      name: AppRoutes.noConnection,
+      builder: (context, state) => const NoConnectionScreen(),
+    ),
   ],
 );
