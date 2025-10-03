@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/widgets/connectivity_wrapper.dart';
+import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final auth = Provider.of<AuthProvider>(context);
+    if (auth.isLoggedIn) {
+      Future.microtask(() => context.goNamed(AppRoutes.home));
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
     return ConnectivityWrapper(
       child: Scaffold(
         body: SafeArea(
@@ -65,7 +74,7 @@ class WelcomeScreen extends StatelessWidget {
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () => context.goNamed(AppRoutes.phoneInput),
                     style: ElevatedButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(

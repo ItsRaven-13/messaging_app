@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/app/app.dart';
 import 'package:messaging_app/core/providers/connectivity_provider.dart';
+import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:messaging_app/firebase_options.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,7 @@ Future<void> main(List<String> args) async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
       ],
       child: const MyApp(),
