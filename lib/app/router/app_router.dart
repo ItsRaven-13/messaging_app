@@ -8,7 +8,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/${AppRoutes.welcome}',
       name: AppRoutes.welcome,
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const WelcomeScreen(),
     ),
     GoRoute(
       path: '/${AppRoutes.noConnection}',
