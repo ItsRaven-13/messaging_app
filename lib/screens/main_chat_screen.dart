@@ -37,7 +37,7 @@ List<Chat> mockChats = [
     lastMessage: 'Hola, zya estas?',
     lastMessageTime: '10:25 PM',
     unreadCount: 2,
-    avatarColor: AppColors.avatarPurple,
+    avatarColor: AppColorsLight.avatarPurple,
   ),
   Chat(
     id: '2',
@@ -45,7 +45,7 @@ List<Chat> mockChats = [
     lastMessage: 'Mama: Manda foto',
     lastMessageTime: '9:10 PM',
     isGroup: true,
-    avatarColor: AppColors.avatarYellow,
+    avatarColor: AppColorsLight.avatarYellow,
     groupIcon: Icons.people,
   ),
   Chat(
@@ -53,7 +53,7 @@ List<Chat> mockChats = [
     name: 'Luis Mario',
     lastMessage: 'Sale, nos vemos',
     lastMessageTime: '8:05 PM',
-    avatarColor: AppColors.avatarBlue,
+    avatarColor: AppColorsLight.avatarBlue,
   ),
   // Puedes agregar más chats de prueba aquí
 ];
@@ -70,7 +70,10 @@ class MainChatScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              colors: [
+                AppColorsLight.gradientStart,
+                AppColorsLight.gradientEnd,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -79,14 +82,14 @@ class MainChatScreen extends StatelessWidget {
         title: const Text(
           'Mensajería',
           style: TextStyle(
-            color: AppColors.textColor,
+            color: AppColorsLight.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppColors.textColor),
+            icon: const Icon(Icons.search, color: AppColorsLight.textPrimary),
             onPressed: () {
               // Lógica para buscar
             },
@@ -117,7 +120,10 @@ class MainChatScreen extends StatelessWidget {
                 );
               }
             },
-            icon: const Icon(Icons.more_vert, color: AppColors.textColor),
+            icon: const Icon(
+              Icons.more_vert,
+              color: AppColorsLight.textPrimary,
+            ),
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
               const PopupMenuItem<String>(
                 value: 'grupos',
@@ -136,7 +142,8 @@ class MainChatScreen extends StatelessWidget {
         ],
       ),
       body: Container(
-        color: AppColors.lightBlueBackground, // Fondo de la pantalla principal
+        color: AppColorsLight
+            .lightBlueBackground, // Fondo de la pantalla principal
         child: ListView.builder(
           itemCount: mockChats.length,
           itemBuilder: (context, index) {
@@ -150,8 +157,8 @@ class MainChatScreen extends StatelessWidget {
           // Lógica para iniciar nueva conversación o crear grupo
           // Podrías mostrar un modal o navegar a una pantalla de selección
         },
-        backgroundColor: AppColors.secondaryColor,
-        child: const Icon(Icons.add, color: AppColors.textColor),
+        backgroundColor: AppColorsLight.secondary,
+        child: const Icon(Icons.add, color: AppColorsLight.textPrimary),
       ),
     );
   }
@@ -208,7 +215,7 @@ class ChatListItem extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: AppColors.textColor,
+                        color: AppColorsLight.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -234,8 +241,8 @@ class ChatListItem extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors
-                            .secondaryColor, // Color rosa para el contador
+                        color: AppColorsLight
+                            .secondary, // Color rosa para el contador
                         borderRadius: BorderRadius.circular(12),
                       ),
                       constraints: const BoxConstraints(

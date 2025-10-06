@@ -49,7 +49,10 @@ class ChatScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              colors: [
+                AppColorsLight.gradientStart,
+                AppColorsLight.gradientEnd,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -58,17 +61,20 @@ class ChatScreen extends StatelessWidget {
         title: Text(
           chat.name,
           style: const TextStyle(
-            color: AppColors.textColor,
+            color: AppColorsLight.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColorsLight.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.more_vert, color: AppColors.textColor),
+            icon: const Icon(
+              Icons.more_vert,
+              color: AppColorsLight.textPrimary,
+            ),
             onPressed: () {},
           ),
         ],
@@ -121,9 +127,9 @@ class MessageBubble extends StatelessWidget {
         ? Alignment.centerRight
         : Alignment.centerLeft;
     final color = message.isMe
-        ? AppColors.secondaryColor
+        ? AppColorsLight.secondary
         : Colors.white; // Rosa vs Blanco
-    final textColor = AppColors.textColor;
+    final textPrimary = AppColorsLight.textPrimary;
 
     return Container(
       alignment: alignment,
@@ -157,7 +163,7 @@ class MessageBubble extends StatelessWidget {
               ],
             ),
             padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: Text(message.text, style: TextStyle(color: textColor)),
+            child: Text(message.text, style: TextStyle(color: textPrimary)),
           ),
           const SizedBox(height: 2),
           Text(
@@ -179,8 +185,8 @@ class _ChatInputArea extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(10.0),
       decoration: const BoxDecoration(
-        color: AppColors
-            .primaryColor, // La barra de entrada tiene el color azul claro
+        color: AppColorsLight
+            .primary, // La barra de entrada tiene el color azul claro
         boxShadow: [
           BoxShadow(
             color: Colors.black12,
@@ -193,7 +199,7 @@ class _ChatInputArea extends StatelessWidget {
         children: [
           // Botón de micrófono/archivo
           IconButton(
-            icon: const Icon(Icons.mic, color: AppColors.textColor),
+            icon: const Icon(Icons.mic, color: AppColorsLight.textPrimary),
             onPressed: () {},
           ),
 
@@ -221,7 +227,7 @@ class _ChatInputArea extends StatelessWidget {
 
           // Botón de enviar
           IconButton(
-            icon: const Icon(Icons.send, color: AppColors.textColor),
+            icon: const Icon(Icons.send, color: AppColorsLight.textPrimary),
             onPressed: () {},
           ),
         ],

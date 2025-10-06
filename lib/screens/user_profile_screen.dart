@@ -11,7 +11,10 @@ class UserProfileScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              colors: [
+                AppColorsLight.gradientStart,
+                AppColorsLight.gradientEnd,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -20,18 +23,18 @@ class UserProfileScreen extends StatelessWidget {
         title: const Text(
           'Mi Perfil',
           style: TextStyle(
-            color: AppColors.textColor,
+            color: AppColorsLight.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColorsLight.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: Container(
-        color: AppColors.lightBlueBackground,
+        color: AppColorsLight.lightBlueBackground,
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(30.0),
@@ -40,7 +43,7 @@ class UserProfileScreen extends StatelessWidget {
                 // Avatar grande
                 const CircleAvatar(
                   radius: 70,
-                  backgroundColor: AppColors.avatarPurple,
+                  backgroundColor: AppColorsLight.avatarPurple,
                   child: Icon(Icons.person, size: 80, color: Colors.white),
                 ),
                 const SizedBox(height: 10),
@@ -49,7 +52,7 @@ class UserProfileScreen extends StatelessWidget {
                   onPressed: () {},
                   child: const Text(
                     'Cambiar foto de perfil',
-                    style: TextStyle(color: AppColors.primaryColor),
+                    style: TextStyle(color: AppColorsLight.primary),
                   ),
                 ),
                 const SizedBox(height: 30),
@@ -93,7 +96,7 @@ class UserProfileScreen extends StatelessWidget {
                     // Lógica para guardar o editar el perfil
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.secondaryColor,
+                    backgroundColor: AppColorsLight.secondary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(30),
                     ),
@@ -104,7 +107,10 @@ class UserProfileScreen extends StatelessWidget {
                   ),
                   child: const Text(
                     'Guardar Cambios',
-                    style: TextStyle(fontSize: 16, color: AppColors.textColor),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColorsLight.textPrimary,
+                    ),
                   ),
                 ),
               ],
@@ -132,7 +138,7 @@ class _ProfileField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.primaryColor),
+        Icon(icon, color: AppColorsLight.primary),
         const SizedBox(width: 15),
         Expanded(
           child: Column(
@@ -147,7 +153,7 @@ class _ProfileField extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   fontSize: 16,
-                  color: AppColors.textColor,
+                  color: AppColorsLight.textPrimary,
                 ),
               ),
             ],

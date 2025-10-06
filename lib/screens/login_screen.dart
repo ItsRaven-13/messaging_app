@@ -9,7 +9,7 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColorsLight.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -21,7 +21,7 @@ class LoginScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryColor,
+                  color: AppColorsLight.primary,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -33,7 +33,7 @@ class LoginScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
+                    color: AppColorsLight.textPrimary,
                   ),
                 ),
               ),
@@ -86,7 +86,7 @@ class LoginScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
+                  backgroundColor: AppColorsLight.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -94,7 +94,10 @@ class LoginScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Ingresar',
-                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColorsLight.textPrimary,
+                  ),
                 ),
               ),
 
@@ -106,7 +109,7 @@ class LoginScreen extends StatelessWidget {
                 children: [
                   const Text(
                     '¿No tienes cuenta?',
-                    style: TextStyle(color: AppColors.textColor),
+                    style: TextStyle(color: AppColorsLight.textPrimary),
                   ),
                   TextButton(
                     onPressed: () {
@@ -120,7 +123,7 @@ class LoginScreen extends StatelessWidget {
                     },
                     child: const Text(
                       'Regístrate',
-                      style: TextStyle(color: AppColors.primaryColor),
+                      style: TextStyle(color: AppColorsLight.primary),
                     ),
                   ),
                 ],

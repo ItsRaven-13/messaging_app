@@ -24,20 +24,20 @@ List<Group> mockGroups = [
     id: 'g1',
     name: 'Grupo Familia',
     lastActivity: '3 miembros',
-    avatarColor: AppColors.avatarYellow,
+    avatarColor: AppColorsLight.avatarYellow,
   ),
   Group(
     id: 'g2',
     name: 'Amigos de la Uni',
     lastActivity: '2 miembros',
-    avatarColor: AppColors.avatarBlue,
+    avatarColor: AppColorsLight.avatarBlue,
     icon: Icons.school,
   ),
   Group(
     id: 'g3',
     name: 'Trabajo - Proyectos',
     lastActivity: '7 miembros',
-    avatarColor: AppColors.avatarPink,
+    avatarColor: AppColorsLight.avatarPink,
     icon: Icons.work,
   ),
 ];
@@ -53,7 +53,10 @@ class GroupListScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              colors: [
+                AppColorsLight.gradientStart,
+                AppColorsLight.gradientEnd,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -62,24 +65,24 @@ class GroupListScreen extends StatelessWidget {
         title: const Text(
           'Grupos',
           style: TextStyle(
-            color: AppColors.textColor,
+            color: AppColorsLight.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColorsLight.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppColors.textColor),
+            icon: const Icon(Icons.search, color: AppColorsLight.textPrimary),
             onPressed: () {},
           ),
         ],
       ),
       body: Container(
-        color: AppColors.lightBlueBackground,
+        color: AppColorsLight.lightBlueBackground,
         child: ListView.builder(
           itemCount: mockGroups.length,
           itemBuilder: (context, index) {
@@ -125,7 +128,7 @@ class GroupListItem extends StatelessWidget {
                     style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
-                      color: AppColors.textColor,
+                      color: AppColorsLight.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 4),

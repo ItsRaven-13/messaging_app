@@ -7,13 +7,13 @@ class VerificationCodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColorsLight.background,
       appBar: AppBar(
         title: const Text(
           'Verificación',
-          style: TextStyle(color: AppColors.textColor),
+          style: TextStyle(color: AppColorsLight.textPrimary),
         ),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColorsLight.primary,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -45,7 +45,7 @@ class VerificationCodeScreen extends StatelessWidget {
                   // Aquí iría la lógica para verificar el código y navegar a la pantalla principal
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
+                  backgroundColor: AppColorsLight.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -53,7 +53,10 @@ class VerificationCodeScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Ingresar',
-                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColorsLight.textPrimary,
+                  ),
                 ),
               ),
 
@@ -63,7 +66,7 @@ class VerificationCodeScreen extends StatelessWidget {
               const Text(
                 'No recibiste el codigo?',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textColor),
+                style: TextStyle(color: AppColorsLight.textPrimary),
               ),
 
               // Botón "Reenviar SMS"
@@ -73,7 +76,7 @@ class VerificationCodeScreen extends StatelessWidget {
                 },
                 child: const Text(
                   'Reenviar SMS',
-                  style: TextStyle(color: AppColors.primaryColor),
+                  style: TextStyle(color: AppColorsLight.primary),
                 ),
               ),
             ],

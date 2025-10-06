@@ -22,25 +22,25 @@ List<Contact> mockContacts = [
     id: 'c1',
     name: 'Ana Rodríguez',
     phoneNumber: '+52 1111',
-    avatarColor: AppColors.avatarPurple,
+    avatarColor: AppColorsLight.avatarPurple,
   ),
   Contact(
     id: 'c2',
     name: 'Carlos García',
     phoneNumber: '+52 2222',
-    avatarColor: AppColors.avatarBlue,
+    avatarColor: AppColorsLight.avatarBlue,
   ),
   Contact(
     id: 'c3',
     name: 'Elena Torres',
     phoneNumber: '+52 3333',
-    avatarColor: AppColors.avatarYellow,
+    avatarColor: AppColorsLight.avatarYellow,
   ),
   Contact(
     id: 'c4',
     name: 'Fernando Lima',
     phoneNumber: '+52 4444',
-    avatarColor: AppColors.avatarPink,
+    avatarColor: AppColorsLight.avatarPink,
   ),
 ];
 
@@ -54,7 +54,10 @@ class ContactListScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              colors: [
+                AppColorsLight.gradientStart,
+                AppColorsLight.gradientEnd,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -63,24 +66,24 @@ class ContactListScreen extends StatelessWidget {
         title: const Text(
           'Contactos',
           style: TextStyle(
-            color: AppColors.textColor,
+            color: AppColorsLight.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColorsLight.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppColors.textColor),
+            icon: const Icon(Icons.search, color: AppColorsLight.textPrimary),
             onPressed: () {},
           ),
         ],
       ),
       body: Container(
-        color: AppColors.lightBlueBackground,
+        color: AppColorsLight.lightBlueBackground,
         child: ListView.builder(
           itemCount: mockContacts.length,
           itemBuilder: (context, index) {
@@ -94,8 +97,8 @@ class ContactListScreen extends StatelessWidget {
           // Lógica para mostrar las opciones "Crear Grupo" o "Agregar Contacto"
           _showContactOptions(context);
         },
-        backgroundColor: AppColors.secondaryColor,
-        child: const Icon(Icons.add, color: AppColors.textColor),
+        backgroundColor: AppColorsLight.secondary,
+        child: const Icon(Icons.add, color: AppColorsLight.textPrimary),
       ),
     );
   }
@@ -113,7 +116,7 @@ void _showContactOptions(BuildContext context) {
             ListTile(
               leading: const Icon(
                 Icons.group_add,
-                color: AppColors.primaryColor,
+                color: AppColorsLight.primary,
               ),
               title: const Text('Crear Grupo'),
               onTap: () {
@@ -124,7 +127,7 @@ void _showContactOptions(BuildContext context) {
             ListTile(
               leading: const Icon(
                 Icons.person_add,
-                color: AppColors.primaryColor,
+                color: AppColorsLight.primary,
               ),
               title: const Text('Agregar Contacto'),
               onTap: () {
@@ -184,7 +187,7 @@ class ContactListItem extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
-                        color: AppColors.textColor,
+                        color: AppColorsLight.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),

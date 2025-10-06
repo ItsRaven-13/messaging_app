@@ -8,13 +8,13 @@ class PhoneNumberScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColorsLight.background,
       appBar: AppBar(
         title: const Text(
           'Verificación',
-          style: TextStyle(color: AppColors.textColor),
+          style: TextStyle(color: AppColorsLight.textPrimary),
         ),
-        backgroundColor: AppColors.primaryColor,
+        backgroundColor: AppColorsLight.primary,
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -27,7 +27,10 @@ class PhoneNumberScreen extends StatelessWidget {
               const Text(
                 'Hemos enviado un código de verificación a tu número de teléfono.',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, color: AppColors.textColor),
+                style: TextStyle(
+                  fontSize: 16,
+                  color: AppColorsLight.textPrimary,
+                ),
               ),
 
               const SizedBox(height: 20),
@@ -61,7 +64,7 @@ class PhoneNumberScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
+                  backgroundColor: AppColorsLight.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -69,7 +72,10 @@ class PhoneNumberScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Ingresar',
-                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColorsLight.textPrimary,
+                  ),
                 ),
               ),
 
@@ -79,7 +85,7 @@ class PhoneNumberScreen extends StatelessWidget {
               const Text(
                 'No recibiste el codigo?',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: AppColors.textColor),
+                style: TextStyle(color: AppColorsLight.textPrimary),
               ),
 
               // Botón "Reenviar SMS"
@@ -89,7 +95,7 @@ class PhoneNumberScreen extends StatelessWidget {
                 },
                 child: const Text(
                   'Reenviar SMS',
-                  style: TextStyle(color: AppColors.primaryColor),
+                  style: TextStyle(color: AppColorsLight.primary),
                 ),
               ),
             ],

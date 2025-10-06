@@ -8,7 +8,7 @@ class RegistrationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.backgroundColor,
+      backgroundColor: AppColorsLight.background,
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -20,7 +20,7 @@ class RegistrationScreen extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 20),
                 decoration: const BoxDecoration(
-                  color: AppColors.primaryColor,
+                  color: AppColorsLight.primary,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(30),
                     topRight: Radius.circular(30),
@@ -32,7 +32,7 @@ class RegistrationScreen extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: AppColors.textColor,
+                    color: AppColorsLight.textPrimary,
                   ),
                 ),
               ),
@@ -118,7 +118,7 @@ class RegistrationScreen extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.secondaryColor,
+                  backgroundColor: AppColorsLight.secondary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
@@ -126,7 +126,10 @@ class RegistrationScreen extends StatelessWidget {
                 ),
                 child: const Text(
                   'Registrarme',
-                  style: TextStyle(fontSize: 18, color: AppColors.textColor),
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: AppColorsLight.textPrimary,
+                  ),
                 ),
               ),
 
@@ -138,7 +141,7 @@ class RegistrationScreen extends StatelessWidget {
                 children: [
                   const Text(
                     '¿Ya tienes cuenta?',
-                    style: TextStyle(color: AppColors.textColor),
+                    style: TextStyle(color: AppColorsLight.textPrimary),
                   ),
                   TextButton(
                     onPressed: () {
@@ -146,7 +149,7 @@ class RegistrationScreen extends StatelessWidget {
                     },
                     child: const Text(
                       'Inicia sesión',
-                      style: TextStyle(color: AppColors.primaryColor),
+                      style: TextStyle(color: AppColorsLight.primary),
                     ),
                   ),
                 ],
