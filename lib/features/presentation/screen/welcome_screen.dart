@@ -40,7 +40,10 @@ class WelcomeScreen extends StatelessWidget {
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(
-                    style: const TextStyle(fontSize: 14),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Theme.of(context).colorScheme.onSurface,
+                    ),
                     children: [
                       const TextSpan(
                         text: 'Toca "Aceptar y continuar" para aceptar los ',
@@ -49,6 +52,8 @@ class WelcomeScreen extends StatelessWidget {
                         text: 'términos de servicio',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                          decoration: TextDecoration.underline,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
@@ -60,6 +65,8 @@ class WelcomeScreen extends StatelessWidget {
                         text: 'política de privacidad',
                         style: TextStyle(
                           color: Theme.of(context).colorScheme.primary,
+                          fontWeight: FontWeight.w700,
+                          decoration: TextDecoration.underline,
                         ),
                         recognizer: TapGestureRecognizer()
                           ..onTap = () {
