@@ -35,7 +35,19 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         AppRoutes.otpVerification,
         extra: OtpVerificationArgs(phoneNumber),
       ),
-      onVerified: (_) => context.goNamed(AppRoutes.home),
+      onVerified: (user, smsCode) {
+        if (smsCode != null) {
+          context.goNamed(
+            AppRoutes.otpVerification,
+            extra: OtpVerificationArgs(
+              phoneNumber,
+              autodetectedSmsCode: smsCode,
+            ),
+          );
+        } else {
+          context.goNamed(AppRoutes.home);
+        }
+      },
       onError: (error) => ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(error))),

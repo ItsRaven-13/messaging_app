@@ -10,7 +10,8 @@ class AuthService {
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required Function(String verificationId) codeSent,
-    required Function(UserCredential user) verificationCompleted,
+    required Function(UserCredential user, String? smsCode)
+    verificationCompleted,
     required Function(String error) verificationFailed,
   }) async {
     await _auth.verifyPhoneNumber(
@@ -19,7 +20,7 @@ class AuthService {
       verificationCompleted: (PhoneAuthCredential credential) async {
         try {
           final userCredential = await _auth.signInWithCredential(credential);
-          verificationCompleted(userCredential);
+          verificationCompleted(userCredential, credential.smsCode);
         } catch (e) {
           verificationFailed(e.toString());
         }

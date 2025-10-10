@@ -28,7 +28,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> sendCode({
     required String phoneNumber,
     required Function() onCodeSent,
-    required Function(User) onVerified,
+    required Function(User, String? smsCode) onVerified,
     required Function(String) onError,
   }) async {
     _setLoading(true);
@@ -39,10 +39,10 @@ class AuthProvider extends ChangeNotifier {
         _setLoading(false);
         onCodeSent();
       },
-      verificationCompleted: (userCredential) {
+      verificationCompleted: (userCredential, smsCode) {
         _user = userCredential.user;
         _setLoading(false);
-        onVerified(userCredential.user!);
+        onVerified(userCredential.user!, smsCode);
       },
       verificationFailed: (error) {
         _setLoading(false);

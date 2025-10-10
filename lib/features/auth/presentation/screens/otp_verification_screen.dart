@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:messaging_app/core/styles/pin_theme_styles.dart';
 import 'package:messaging_app/features/auth/domain/validators/otp_validator.dart';
+import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/widgets/connectivity_wrapper.dart';
@@ -9,7 +11,12 @@ import 'package:messaging_app/features/auth/presentation/providers/auth_provider
 
 class OtpVerificationScreen extends StatefulWidget {
   final String phoneNumber;
-  const OtpVerificationScreen({super.key, required this.phoneNumber});
+  final String? autodetectedSmsCode;
+  const OtpVerificationScreen({
+    super.key,
+    required this.phoneNumber,
+    this.autodetectedSmsCode,
+  });
 
   @override
   State<OtpVerificationScreen> createState() => _OtpVerificationScreenState();
@@ -18,6 +25,24 @@ class OtpVerificationScreen extends StatefulWidget {
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _codeController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.autodetectedSmsCode != null &&
+        widget.autodetectedSmsCode!.length == 6) {
+      _codeController.text = widget.autodetectedSmsCode!;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context.goNamed(AppRoutes.home);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _codeController.dispose();
+    super.dispose();
+  }
 
   void _verifyCode(AuthProvider auth) async {
     final hasInternet = await NetworkUtils.hasInternetConnection();
@@ -37,9 +62,20 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     );
   }
 
+  void _onCompleted(String pin, AuthProvider auth) {
+    _codeController.text = pin;
+    if (_formKey.currentState!.validate()) {
+      _verifyCode(auth);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+    final defaultPinTheme = PinThemeStyles.getDefaultTheme(context);
+    final focusedPinTheme = PinThemeStyles.getFocusedTheme(context);
+    final errorPinTheme = PinThemeStyles.getErrorTheme(context);
+    final submittedPinTheme = PinThemeStyles.getSubmittedTheme(context);
 
     return ConnectivityWrapper(
       child: Scaffold(
@@ -54,21 +90,26 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
               children: [
                 Text("Se envió un código a ${widget.phoneNumber}"),
                 const SizedBox(height: 20),
-                TextFormField(
+                Pinput(
                   controller: _codeController,
-                  keyboardType: TextInputType.number,
-                  decoration: const InputDecoration(
-                    hintText: "Código de verificación",
-                    border: OutlineInputBorder(),
-                  ),
-                  maxLength: 6,
+                  length: 6,
+                  defaultPinTheme: defaultPinTheme,
+                  focusedPinTheme: focusedPinTheme,
+                  submittedPinTheme: submittedPinTheme,
+                  errorPinTheme: errorPinTheme,
                   validator: OtpValidator.isValid,
+                  keyboardType: TextInputType.number,
+                  onCompleted: (pin) => _onCompleted(pin, auth),
                 ),
                 const SizedBox(height: 24),
                 auth.loading
                     ? const CircularProgressIndicator()
                     : ElevatedButton(
-                        onPressed: () => _verifyCode(auth),
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            _verifyCode(auth);
+                          }
+                        },
                         child: const Text("Verificar"),
                       ),
               ],

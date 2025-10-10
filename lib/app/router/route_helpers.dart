@@ -10,5 +10,6 @@ T requireExtra<T>(GoRouterState state) {
 
 class OtpVerificationArgs {
   final String phoneNumber;
-  OtpVerificationArgs(this.phoneNumber);
+  final String? autodetectedSmsCode;
+  OtpVerificationArgs(this.phoneNumber, {this.autodetectedSmsCode});
 }
