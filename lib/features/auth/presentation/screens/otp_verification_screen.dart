@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:messaging_app/features/auth/domain/validators/otp_validator.dart';
 import 'package:provider/provider.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/widgets/connectivity_wrapper.dart';
@@ -15,6 +16,7 @@ class OtpVerificationScreen extends StatefulWidget {
 }
 
 class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
+  final _formKey = GlobalKey<FormState>();
   final TextEditingController _codeController = TextEditingController();
 
   void _verifyCode(AuthProvider auth) async {
@@ -44,27 +46,33 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
         appBar: AppBar(title: const Text("Verificación")),
         body: Padding(
           padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text("Se envió un código a ${widget.phoneNumber}"),
-              const SizedBox(height: 20),
-              TextField(
-                controller: _codeController,
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(
-                  hintText: "Código de verificación",
-                  border: OutlineInputBorder(),
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text("Se envió un código a ${widget.phoneNumber}"),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _codeController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    hintText: "Código de verificación",
+                    border: OutlineInputBorder(),
+                  ),
+                  maxLength: 6,
+                  validator: OtpValidator.isValid,
                 ),
-              ),
-              const SizedBox(height: 24),
-              auth.loading
-                  ? const CircularProgressIndicator()
-                  : ElevatedButton(
-                      onPressed: () => _verifyCode(auth),
-                      child: const Text("Verificar"),
-                    ),
-            ],
+                const SizedBox(height: 24),
+                auth.loading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        onPressed: () => _verifyCode(auth),
+                        child: const Text("Verificar"),
+                      ),
+              ],
+            ),
           ),
         ),
       ),
