@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/core/constants/app_colors.dart';
+import 'package:messaging_app/features/chat/presentation/screens/contact_list_screen.dart';
 import 'chat_screen.dart'; // Vamos a pre-importar la pantalla de chat
 import 'group_list_screen.dart'; // Para el menú de grupos
 import 'user_profile_screen.dart'; // Para el menú de perfil
-import 'contact_list_screen.dart'; // Para el menú de contactos
 
 // --- MODELOS DE DATOS SIMULADOS ---
 // Estos modelos serán reemplazados por datos reales del backend más adelante.

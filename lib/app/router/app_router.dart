@@ -27,7 +27,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/${AppRoutes.home}',
       name: AppRoutes.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const HomeChatScreen(),
+    ),
+    GoRoute(
+      path: '/${AppRoutes.contacts}',
+      name: AppRoutes.contacts,
+      builder: (context, state) => const ContactListScreen(),
     ),
     GoRoute(
       path: '/${AppRoutes.noConnection}',
