@@ -55,7 +55,16 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     auth.verifyCode(
       smsCode: _codeController.text.trim(),
-      onSuccess: (_) => context.goNamed(AppRoutes.home),
+      onSuccess: (_) async {
+        final exists = await auth.userExists();
+        if (context.mounted) {
+          if (exists) {
+            context.goNamed(AppRoutes.home);
+          } else {
+            context.goNamed(AppRoutes.profileSetup);
+          }
+        }
+      },
       onError: (error) => ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(error))),

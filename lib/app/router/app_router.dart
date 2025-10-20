@@ -25,6 +25,11 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/${AppRoutes.profileSetup}',
+      name: AppRoutes.profileSetup,
+      builder: (context, state) => const ProfileSetupScreen(),
+    ),
+    GoRoute(
       path: '/${AppRoutes.home}',
       name: AppRoutes.home,
       builder: (context, state) => const HomeChatScreen(),

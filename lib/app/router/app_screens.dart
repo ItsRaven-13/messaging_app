@@ -4,3 +4,4 @@ export 'package:messaging_app/features/auth/presentation/screens/phone_input_scr
 export 'package:messaging_app/features/auth/presentation/screens/otp_verification_screen.dart';
 export 'package:messaging_app/features/chat/presentation/screens/home_chat_screen.dart';
 export 'package:messaging_app/features/chat/presentation/screens/contact_list_screen.dart';
+export 'package:messaging_app/features/auth/presentation/screens/profile_setup_screen.dart';
