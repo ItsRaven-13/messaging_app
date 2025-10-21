@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:messaging_app/app/theme/theme_extensions.dart';
+import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/features/auth/domain/validators/profile_validator.dart';
 import 'package:provider/provider.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
@@ -18,13 +18,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final TextEditingController _nameController = TextEditingController();
   int _selectedColorIndex = 0;
 
-  List<Color> _avatarColors(BuildContext context) => [
-    context.colors.avatarBlue,
-    context.colors.avatarPink,
-    context.colors.avatarYellow,
-    context.colors.avatarPurple,
-  ];
-
   String get _initials {
     final name = _nameController.text.trim();
     if (name.isEmpty) return '';
@@ -36,6 +29,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   @override
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthProvider>(context);
+    final avatarColors = AvatarColors(context).colors;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Configura tu perfil')),
@@ -49,7 +43,7 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 40),
               CircleAvatar(
                 radius: 45,
-                backgroundColor: _avatarColors(context)[_selectedColorIndex],
+                backgroundColor: avatarColors[_selectedColorIndex],
                 child: _initials.isNotEmpty
                     ? Text(_initials, style: const TextStyle(fontSize: 30))
                     : const Icon(Icons.add_a_photo_outlined, size: 40),
@@ -57,8 +51,8 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
               const SizedBox(height: 30),
               Wrap(
                 spacing: 16,
-                children: List.generate(_avatarColors(context).length, (index) {
-                  final color = _avatarColors(context)[index];
+                children: List.generate(avatarColors.length, (index) {
+                  final color = avatarColors[index];
                   return GestureDetector(
                     onTap: () => setState(() => _selectedColorIndex = index),
                     child: Container(
