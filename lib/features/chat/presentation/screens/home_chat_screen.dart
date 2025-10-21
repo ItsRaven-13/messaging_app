@@ -42,7 +42,9 @@ class HomeChatScreen extends StatelessWidget {
       ),
       body: const Center(child: Text('Welcome to the Home Screen!')),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          context.pushNamed(AppRoutes.contacts);
+        },
         child: const Icon(Icons.add),
       ),
     );
