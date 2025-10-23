@@ -44,6 +44,7 @@ class ThemeFactory {
 
       extensions: [
         AppColors(
+          surface: palette.surface,
           gradientStart: palette.gradientStart,
           gradientEnd: palette.gradientEnd,
           lightBlueBackground: palette.lightBlueBackground,
