@@ -2,6 +2,8 @@ import 'package:go_router/go_router.dart';
 import 'package:messaging_app/app/router/route_helpers.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/app/router/app_screens.dart';
+import 'package:messaging_app/features/chat/presentation/screens/chat_screen.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/${AppRoutes.welcome}',
@@ -25,9 +27,27 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/${AppRoutes.profileSetup}',
+      name: AppRoutes.profileSetup,
+      builder: (context, state) => const ProfileSetupScreen(),
+    ),
+    GoRoute(
       path: '/${AppRoutes.home}',
       name: AppRoutes.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const HomeChatScreen(),
+    ),
+    GoRoute(
+      path: '/${AppRoutes.contacts}',
+      name: AppRoutes.contacts,
+      builder: (context, state) => const ContactListScreen(),
+    ),
+    GoRoute(
+      path: '/${AppRoutes.chat}',
+      name: AppRoutes.chat,
+      builder: (context, state) {
+        final contact = state.extra as ContactModel;
+        return ChatScreen(contactId: contact.uid, contactName: contact.name);
+      },
     ),
     GoRoute(
       path: '/${AppRoutes.noConnection}',

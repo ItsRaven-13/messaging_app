@@ -39,6 +39,9 @@ class AppColorsDark {
   static const Color textSecondary = Colors.white54;
 
   // Gradientes suaves
+  static const Color lightBlueBackground = Color(
+    0xFF263238,
+  ); // Azul grisáceo oscuro
   static const Color gradientStart = Color(0xFF2C3E50); // Azul grisáceo oscuro
   static const Color gradientEnd = Color(0xFF34495E); // Azul noche suave
 

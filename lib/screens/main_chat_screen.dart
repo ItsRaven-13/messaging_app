@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/core/constants/app_colors.dart';
-import 'chat_screen.dart'; // Vamos a pre-importar la pantalla de chat
+import 'package:messaging_app/features/contacts/presentation/contact_list_screen.dart'; // Vamos a pre-importar la pantalla de chat
 import 'group_list_screen.dart'; // Para el menú de grupos
 import 'user_profile_screen.dart'; // Para el menú de perfil
-import 'contact_list_screen.dart'; // Para el menú de contactos
 
 // --- MODELOS DE DATOS SIMULADOS ---
 // Estos modelos serán reemplazados por datos reales del backend más adelante.
@@ -177,13 +176,7 @@ class ChatListItem extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.white, // Fondo blanco de la tarjeta
       child: InkWell(
-        onTap: () {
-          // Navega a la pantalla de chat específica
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ChatScreen(chat: chat)),
-          );
-        },
+        onTap: () {},
         borderRadius: BorderRadius.circular(15),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
