@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 extension ChunkingExtension<T> on Iterable<T> {

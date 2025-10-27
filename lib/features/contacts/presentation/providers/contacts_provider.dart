@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/features/contacts/data/contacts_service.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 
 extension ChunkingExtension<T> on Iterable<T> {
   Iterable<List<T>> chunked(int size) sync* {

@@ -3,7 +3,7 @@ import 'package:messaging_app/app/router/route_helpers.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/app/router/app_screens.dart';
 import 'package:messaging_app/features/chat/presentation/screens/chat_screen.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 
 final GoRouter appRouter = GoRouter(
   initialLocation: '/${AppRoutes.welcome}',

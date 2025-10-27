@@ -5,7 +5,7 @@ import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:provider/provider.dart';
 
 class HomeChatScreen extends StatefulWidget {

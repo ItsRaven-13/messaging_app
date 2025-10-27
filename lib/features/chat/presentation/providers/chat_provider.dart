@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/data/chat_service.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatProvider extends ChangeNotifier {

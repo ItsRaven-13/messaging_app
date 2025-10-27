@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/app/theme/theme_extensions.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';

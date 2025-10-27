@@ -6,7 +6,7 @@ import 'package:messaging_app/core/providers/connectivity_provider.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
-import 'package:messaging_app/features/contacts/domain/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 import 'package:messaging_app/firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
