@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:messaging_app/app/theme/theme_extensions.dart';
+import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/features/contacts/domain/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
@@ -69,7 +70,9 @@ class _ContactListItem extends StatelessWidget {
     final avatarColors = AvatarColors(context).colors;
     return Card(
       child: InkWell(
-        onTap: () {},
+        onTap: () {
+          context.goNamed(AppRoutes.chat, extra: contact);
+        },
         borderRadius: BorderRadius.circular(15),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -79,11 +82,7 @@ class _ContactListItem extends StatelessWidget {
                 radius: 25,
                 backgroundColor: avatarColors[contact.colorIndex],
                 child: Text(
-                  contact.name
-                      .split(' ')
-                      .map((e) => e.isNotEmpty ? e[0].toUpperCase() : '')
-                      .take(2)
-                      .join(),
+                  contact.initials,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
@@ -128,12 +127,12 @@ void _showContactOptions(BuildContext context) {
           children: <Widget>[
             ListTile(
               leading: const Icon(Icons.group_add),
-              title: const Text('Crear Grupo'),
+              title: const Text('Nuevo Grupo'),
               onTap: () => Navigator.pop(bc),
             ),
             ListTile(
               leading: const Icon(Icons.person_add),
-              title: const Text('Agregar Contacto'),
+              title: const Text('Nuevo Contacto'),
               onTap: () => Navigator.pop(bc),
             ),
           ],

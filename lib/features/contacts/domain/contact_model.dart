@@ -26,4 +26,24 @@ class ContactModel {
     required this.phoneNumber,
     required this.colorIndex,
   });
+
+  factory ContactModel.fromMap(Map<String, dynamic> map) {
+    return ContactModel(
+      uid: map['uid'] as String,
+      name: map['name'] as String,
+      initials: map['initials'] as String,
+      phoneNumber: map['phoneNumber'] as String,
+      colorIndex: map['colorIndex'] as int,
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'uid': uid,
+      'name': name,
+      'initials': initials,
+      'phoneNumber': phoneNumber,
+      'colorIndex': colorIndex,
+    };
+  }
 }

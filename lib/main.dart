@@ -4,6 +4,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messaging_app/app/app.dart';
 import 'package:messaging_app/core/providers/connectivity_provider.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:messaging_app/features/chat/domain/models/message_model.dart';
+import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
 import 'package:messaging_app/features/contacts/domain/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 import 'package:messaging_app/firebase_options.dart';
@@ -21,13 +23,16 @@ Future<void> main(List<String> args) async {
   );
   await Hive.initFlutter();
   Hive.registerAdapter(ContactModelAdapter());
+  Hive.registerAdapter(MessageModelAdapter());
   await Hive.openBox<ContactModel>('contacts');
+  await Hive.openBox<MessageModel>('messages');
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => ContactsProvider()),
+        ChangeNotifierProvider(create: (_) => ChatProvider()),
       ],
       child: const MyApp(),
     ),

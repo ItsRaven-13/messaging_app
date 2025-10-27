@@ -5,5 +5,6 @@ class AppRoutes {
   static const profileSetup = 'profileSetup';
   static const home = 'home';
   static const contacts = 'contacts';
+  static const chat = 'chat';
   static const noConnection = 'noConnection';
 }
