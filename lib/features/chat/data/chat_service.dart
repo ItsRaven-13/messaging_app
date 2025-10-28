@@ -11,7 +11,7 @@ class ChatService {
         .doc(chatId)
         .collection('messages')
         .doc(message.id)
-        .set(message.toMap());
+        .set({...message.toMap(), 'timestamp': FieldValue.serverTimestamp()});
   }
 
   Stream<List<MessageModel>> listenToMessages(String myId, String contactId) {

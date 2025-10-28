@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
 
 part 'message_model.g.dart';
@@ -28,24 +29,32 @@ class MessageModel extends HiveObject {
   });
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
+    final ts = map['timestamp'];
+    final parsed = ts is Timestamp
+        ? ts.toDate().toUtc()
+        : DateTime.fromMillisecondsSinceEpoch(
+            (ts ?? DateTime.now().millisecondsSinceEpoch) as int,
+            isUtc: true,
+          );
+
     return MessageModel(
       id: map['id'] ?? '',
       senderId: map['senderId'] ?? '',
       receiverId: map['receiverId'] ?? '',
       text: map['text'] ?? '',
-      timestamp:
-          DateTime.tryParse(map['timestamp'] ?? '')?.toLocal() ??
-          DateTime.now().toLocal(),
+      timestamp: parsed,
     );
   }
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toMap({bool useServerTime = false}) {
     return {
       'id': id,
       'senderId': senderId,
       'receiverId': receiverId,
       'text': text,
-      'timestamp': timestamp.toUtc().toIso8601String(),
+      'timestamp': useServerTime
+          ? FieldValue.serverTimestamp()
+          : timestamp.toUtc().millisecondsSinceEpoch,
     };
   }
 }

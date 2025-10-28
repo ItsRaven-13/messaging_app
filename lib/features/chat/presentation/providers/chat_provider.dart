@@ -103,9 +103,9 @@ class ChatProvider extends ChangeNotifier {
     if (!_isInitialized) return;
 
     _chatService.listenToAllMessages(myId).listen((remoteMessages) async {
-      for (final msg in remoteMessages) {
-        await _messageBox!.put(msg.id, msg);
-      }
+      await _messageBox!.putAll({
+        for (final msg in remoteMessages) msg.id: msg,
+      });
       notifyListeners();
     });
   }
