@@ -1,12 +1,26 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? _verificationId;
 
   User? get currentUser => _auth.currentUser;
 
-  /// Verifica número de teléfono y envía código
+  Future<void> saveFcmToken() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      await _firestore.collection('users').doc(user.uid).set({
+        'fcmToken': FieldValue.arrayUnion([fcmToken]),
+      }, SetOptions(merge: true));
+    }
+  }
+
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required Function(String verificationId) codeSent,
@@ -50,6 +64,17 @@ class AuthService {
   }
 
   Future<void> signOut() async {
+    final user = _auth.currentUser;
+    if (user != null) {
+      final fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        await _firestore.collection('users').doc(user.uid).update({
+          'fcmTokens': FieldValue.arrayRemove([fcmToken]),
+        });
+      }
+    }
+
+    await FirebaseMessaging.instance.deleteToken();
     await _auth.signOut();
   }
 }

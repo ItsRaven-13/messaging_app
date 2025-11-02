@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:messaging_app/app/router/app_router.dart';
 import 'package:messaging_app/features/auth/domain/models/user_model.dart';
 import 'package:messaging_app/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:messaging_app/shared/services/notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -67,6 +69,12 @@ class AuthProvider extends ChangeNotifier {
     try {
       final userCredential = await _authService.signInWithSmsCode(smsCode);
       _user = userCredential.user;
+      if (await userExists()) {
+        await _authService.saveFcmToken();
+        final notificationService = NotificationService();
+        notificationService.setRouter(appRouter);
+        await notificationService.initialize();
+      }
       _setLoading(false);
       onSuccess(userCredential.user!);
     } catch (e) {
@@ -77,6 +85,8 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> signOut() async {
     await _authService.signOut();
+    await NotificationService().dispose();
+    await NotificationService().cancelAllNotifications();
     _user = null;
     notifyListeners();
   }
@@ -103,6 +113,7 @@ class AuthProvider extends ChangeNotifier {
     );
 
     await _firestore.collection('users').doc(_user!.uid).set(newUser.toMap());
+    await _authService.saveFcmToken();
   }
 
   String _getInitials(String name) {
