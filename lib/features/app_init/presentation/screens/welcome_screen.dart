@@ -11,10 +11,25 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context);
+    final auth = Provider.of<AuthProvider>(context, listen: false);
     if (auth.isLoggedIn) {
-      Future.microtask(() => context.goNamed(AppRoutes.home));
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return FutureBuilder<bool>(
+        future: auth.userExists(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          }
+          final exists = snapshot.data ?? false;
+          Future.microtask(() {
+            context.goNamed(exists ? AppRoutes.home : AppRoutes.profileSetup);
+          });
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
+          );
+        },
+      );
     }
     return ConnectivityWrapper(
       child: Scaffold(
