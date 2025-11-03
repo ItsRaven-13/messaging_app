@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -16,7 +17,7 @@ class AuthService {
     final fcmToken = await FirebaseMessaging.instance.getToken();
     if (fcmToken != null) {
       await _firestore.collection('users').doc(user.uid).set({
-        'fcmToken': FieldValue.arrayUnion([fcmToken]),
+        'fcmToken': fcmToken,
       }, SetOptions(merge: true));
     }
   }
@@ -65,16 +66,23 @@ class AuthService {
 
   Future<void> signOut() async {
     final user = _auth.currentUser;
+
     if (user != null) {
-      final fcmToken = await FirebaseMessaging.instance.getToken();
-      if (fcmToken != null) {
+      try {
         await _firestore.collection('users').doc(user.uid).update({
-          'fcmTokens': FieldValue.arrayRemove([fcmToken]),
+          'fcmToken': FieldValue.delete(),
         });
+      } catch (e) {
+        debugPrint('No se pudo borrar el fcmToken: $e');
       }
     }
 
-    await FirebaseMessaging.instance.deleteToken();
+    try {
+      await FirebaseMessaging.instance.deleteToken();
+    } catch (e) {
+      debugPrint('Error eliminando token local: $e');
+    }
+
     await _auth.signOut();
   }
 }

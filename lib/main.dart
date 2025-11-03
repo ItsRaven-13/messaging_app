@@ -29,10 +29,13 @@ Future<void> main(List<String> args) async {
   await Hive.initFlutter();
   Hive.registerAdapter(ContactModelAdapter());
   Hive.registerAdapter(MessageModelAdapter());
+  await Hive.openBox('user_profile');
   await Hive.openBox<ContactModel>('contacts');
   await Hive.openBox<MessageModel>('messages');
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  final chatProvider = ChatProvider();
+
   final authUser = FirebaseAuth.instance.currentUser;
   if (authUser != null) {
     final notificationService = NotificationService();
@@ -43,10 +46,12 @@ Future<void> main(List<String> args) async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => auth_provider.AuthProvider()),
+        ChangeNotifierProvider(
+          create: (_) => auth_provider.AuthProvider(chatProvider: chatProvider),
+        ),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => ContactsProvider()),
-        ChangeNotifierProvider(create: (_) => ChatProvider()),
+        ChangeNotifierProvider(create: (_) => chatProvider),
       ],
       child: MyApp(router: appRouter),
     ),

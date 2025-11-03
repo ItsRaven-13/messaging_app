@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
@@ -15,6 +17,9 @@ class ChatProvider extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
   List<Map<String, dynamic>> _recentChats = [];
   List<Map<String, dynamic>> get recentChats => _recentChats;
+  StreamSubscription<List<MessageModel>>? _allChatsSubscription;
+  final Map<String, StreamSubscription<List<MessageModel>>> _chatSubscriptions =
+      {};
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -61,14 +66,16 @@ class ChatProvider extends ChangeNotifier {
   void listenToChat(String myId, String contactId) {
     if (!_isInitialized) return;
 
-    _chatService.listenToMessages(myId, contactId).listen((
-      remoteMessages,
-    ) async {
-      for (final msg in remoteMessages) {
-        await _messageBox!.put(msg.id, msg);
-      }
-      notifyListeners();
-    });
+    _chatSubscriptions[contactId]?.cancel();
+
+    _chatSubscriptions[contactId] = _chatService
+        .listenToMessages(myId, contactId)
+        .listen((remoteMessages) async {
+          for (final msg in remoteMessages) {
+            await _messageBox!.put(msg.id, msg);
+          }
+          notifyListeners();
+        });
   }
 
   Future<void> _recalculateRecentChats(String myId) async {
@@ -117,12 +124,26 @@ class ChatProvider extends ChangeNotifier {
   void listenToAllChats(String myId) {
     if (!_isInitialized) return;
 
-    _chatService.listenToAllMessages(myId).listen((remoteMessages) async {
+    _allChatsSubscription?.cancel();
+
+    _allChatsSubscription = _chatService.listenToAllMessages(myId).listen((
+      remoteMessages,
+    ) async {
       await _messageBox!.putAll({
         for (final msg in remoteMessages) msg.id: msg,
       });
 
       await _recalculateRecentChats(myId);
     });
+  }
+
+  Future<void> cancelAllListeners() async {
+    await _allChatsSubscription?.cancel();
+    _allChatsSubscription = null;
+
+    for (final sub in _chatSubscriptions.values) {
+      await sub.cancel();
+    }
+    _chatSubscriptions.clear();
   }
 }

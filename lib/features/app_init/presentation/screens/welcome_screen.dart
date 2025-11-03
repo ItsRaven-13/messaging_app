@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/widgets/connectivity_wrapper.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -14,17 +14,22 @@ class WelcomeScreen extends StatelessWidget {
     final auth = Provider.of<AuthProvider>(context, listen: false);
     if (auth.isLoggedIn) {
       return FutureBuilder<bool>(
-        future: auth.userExists(),
+        future: auth.isProfileCompleteLocal(),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return const Scaffold(
               body: Center(child: CircularProgressIndicator()),
             );
           }
-          final exists = snapshot.data ?? false;
+
+          final profileComplete = snapshot.data!;
+
           Future.microtask(() {
-            context.goNamed(exists ? AppRoutes.home : AppRoutes.profileSetup);
+            context.goNamed(
+              profileComplete ? AppRoutes.home : AppRoutes.profileSetup,
+            );
           });
+
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
