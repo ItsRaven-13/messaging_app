@@ -7,6 +7,7 @@ import 'package:messaging_app/features/auth/presentation/providers/auth_provider
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
+import 'package:messaging_app/screens/user_profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeChatScreen extends StatefulWidget {
@@ -40,7 +41,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
     final recentChats = chatProvider.recentChats;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).cardColor,
+      backgroundColor: context.colors.lightBlueBackground,
       appBar: AppBar(
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -59,31 +60,39 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
           PopupMenuButton<String>(
             onSelected: (value) async {
-              if (value == 'logout') {
+              if (value == 'perfil') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const UserProfileScreen(),
+                  ),
+                );
+              } else if (value == 'contactos') {
+                context.pushNamed(AppRoutes.contacts);
+              } else if (value == 'new_group') {
+                // Lógica para crear un nuevo grupo
+              } else if (value == 'logout') {
                 await auth.signOut();
                 context.goNamed(AppRoutes.welcome);
               }
             },
-            itemBuilder: (BuildContext context) => [
-              const PopupMenuItem(
+            icon: const Icon(Icons.more_vert),
+            itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+              const PopupMenuItem<String>(
+                value: 'perfil',
+                child: Text('Perfil'),
+              ),
+              const PopupMenuItem<String>(
+                value: 'contactos',
+                child: Text('Contactos'),
+              ),
+              const PopupMenuItem<String>(
                 value: 'new_group',
-                child: Row(
-                  children: [
-                    Icon(Icons.group_add),
-                    SizedBox(width: 8),
-                    Text('New Group'),
-                  ],
-                ),
+                child: Text('Nuevo Grupo'),
               ),
               const PopupMenuItem(
                 value: 'logout',
-                child: Row(
-                  children: [
-                    Icon(Icons.logout),
-                    SizedBox(width: 8),
-                    Text('Logout'),
-                  ],
-                ),
+                child: Text('Cerrar sesión'),
               ),
             ],
           ),
@@ -106,25 +115,83 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                       final initials = contact?.initials ?? '??';
                       final contactColorIndex = contact?.colorIndex ?? 0;
                       final localTimestamp = lastMsg.timestamp.toLocal();
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: avatarColors[contactColorIndex],
-                          child: Text(initials),
+                      return Card(
+                        child: ListTile(
+                          leading: CircleAvatar(
+                            radius: 25,
+                            backgroundColor: avatarColors[contactColorIndex],
+                            child: Text(
+                              initials,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          title: Text(
+                            contactName,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
+                            lastMsg.text,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                          trailing: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              if (1 > 0) ...[
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.secondary,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  constraints: const BoxConstraints(
+                                    minWidth: 24,
+                                    minHeight: 24,
+                                  ),
+                                  child: Text(
+                                    '10',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                              ],
+                              Text(
+                                '${localTimestamp.hour}:${localTimestamp.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  color: Colors.grey[600],
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                          onTap: () {
+                            final dataToPass =
+                                contact ??
+                                {
+                                  'contactId': contactId,
+                                  'contactName': contactName,
+                                };
+                            context.pushNamed(
+                              AppRoutes.chat,
+                              extra: dataToPass,
+                            );
+                          },
                         ),
-                        title: Text(contactName),
-                        subtitle: Text(lastMsg.text),
-                        trailing: Text(
-                          '${localTimestamp.hour}:${localTimestamp.minute.toString().padLeft(2, '0')}',
-                        ),
-                        onTap: () {
-                          final dataToPass =
-                              contact ??
-                              {
-                                'contactId': contactId,
-                                'contactName': contactName,
-                              };
-                          context.pushNamed(AppRoutes.chat, extra: dataToPass);
-                        },
                       );
                     },
                   )),
