@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:messaging_app/app/theme/theme_extensions.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
@@ -22,8 +23,10 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
     final chatProvider = context.read<ChatProvider>();
     final auth = context.read<AuthProvider>();
     final myId = auth.user?.uid ?? 'myId';
+
     Future.microtask(() async {
       await chatProvider.initialize();
+      await chatProvider.getRecentChats(myId);
       chatProvider.listenToAllChats(myId);
     });
   }
@@ -32,12 +35,25 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
   Widget build(BuildContext context) {
     final chatProvider = context.watch<ChatProvider>();
     final auth = context.read<AuthProvider>();
-    final myId = auth.user?.uid ?? 'myId';
-    final recentChats = chatProvider.getRecentChats(myId);
     final avatarColors = AvatarColors(context).colors;
+
+    final recentChats = chatProvider.recentChats;
+
     return Scaffold(
       backgroundColor: Theme.of(context).cardColor,
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                context.colors.gradientStart,
+                context.colors.gradientEnd,
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         title: const Text('Mensajería'),
         actions: [
           IconButton(icon: const Icon(Icons.search), onPressed: () {}),
@@ -73,35 +89,45 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
           ),
         ],
       ),
-      body: recentChats.isEmpty
-          ? const Center(child: Text('No hay mensajes aún'))
-          : ListView.builder(
-              itemCount: recentChats.length,
-              itemBuilder: (_, index) {
-                final chat = recentChats[index];
-                final MessageModel lastMsg = chat['lastMessage'];
-                final ContactModel? contact = chat['contact'] as ContactModel?;
-                final contactId = chat['contactId'];
-                final contactName = contact?.name ?? contactId;
-                final initials = contact?.initials ?? '??';
-                final contactColorIndex = contact?.colorIndex ?? 0;
-                final localTimestamp = lastMsg.timestamp.toLocal();
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: avatarColors[contactColorIndex],
-                    child: Text(initials),
-                  ),
-                  title: Text(contactName),
-                  subtitle: Text(lastMsg.text),
-                  trailing: Text(
-                    '${localTimestamp.hour}:${localTimestamp.minute.toString().padLeft(2, '0')}',
-                  ),
-                  onTap: () {
-                    context.pushNamed(AppRoutes.chat, extra: contact);
-                  },
-                );
-              },
-            ),
+      body: !chatProvider.isInitialized
+          ? const Center(child: CircularProgressIndicator())
+          : (recentChats.isEmpty
+                ? const Center(child: Text('No hay mensajes aún'))
+                : ListView.builder(
+                    itemCount: recentChats.length,
+                    itemBuilder: (_, index) {
+                      final chat = recentChats[index];
+                      final MessageModel lastMsg =
+                          chat['lastMessage'] as MessageModel;
+                      final ContactModel? contact =
+                          chat['contact'] as ContactModel?;
+                      final String contactId = chat['contactId'] as String;
+                      final contactName = contact?.name ?? contactId;
+                      final initials = contact?.initials ?? '??';
+                      final contactColorIndex = contact?.colorIndex ?? 0;
+                      final localTimestamp = lastMsg.timestamp.toLocal();
+                      return ListTile(
+                        leading: CircleAvatar(
+                          backgroundColor: avatarColors[contactColorIndex],
+                          child: Text(initials),
+                        ),
+                        title: Text(contactName),
+                        subtitle: Text(lastMsg.text),
+                        trailing: Text(
+                          '${localTimestamp.hour}:${localTimestamp.minute.toString().padLeft(2, '0')}',
+                        ),
+                        onTap: () {
+                          final dataToPass =
+                              contact ??
+                              {
+                                'contactId': contactId,
+                                'contactName': contactName,
+                              };
+                          context.pushNamed(AppRoutes.chat, extra: dataToPass);
+                        },
+                      );
+                    },
+                  )),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.pushNamed(AppRoutes.contacts);

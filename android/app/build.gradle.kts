@@ -16,6 +16,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -53,4 +54,6 @@ dependencies {
     // Add the dependency for the App Check library
     // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation("com.google.firebase:firebase-appcheck-debug")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
 }

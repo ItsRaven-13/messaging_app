@@ -1,16 +1,25 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/data/chat_service.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
+import 'package:messaging_app/shared/services/user_service.dart';
 import 'package:uuid/uuid.dart';
 
 class ChatProvider extends ChangeNotifier {
   final _uuid = const Uuid();
   final _chatService = ChatService();
+  final _userService = UserService();
   Box<MessageModel>? _messageBox;
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
+  List<Map<String, dynamic>> _recentChats = [];
+  List<Map<String, dynamic>> get recentChats => _recentChats;
+  StreamSubscription<List<MessageModel>>? _allChatsSubscription;
+  final Map<String, StreamSubscription<List<MessageModel>>> _chatSubscriptions =
+      {};
 
   Future<void> initialize() async {
     if (_isInitialized) return;
@@ -49,29 +58,31 @@ class ChatProvider extends ChangeNotifier {
     );
 
     await _messageBox!.put(message.id, message);
-    notifyListeners();
-
     await _chatService.sendMessage(message);
+
+    await _recalculateRecentChats(senderId);
   }
 
   void listenToChat(String myId, String contactId) {
     if (!_isInitialized) return;
 
-    _chatService.listenToMessages(myId, contactId).listen((
-      remoteMessages,
-    ) async {
-      for (final msg in remoteMessages) {
-        await _messageBox!.put(msg.id, msg);
-      }
-      notifyListeners();
-    });
+    _chatSubscriptions[contactId]?.cancel();
+
+    _chatSubscriptions[contactId] = _chatService
+        .listenToMessages(myId, contactId)
+        .listen((remoteMessages) async {
+          for (final msg in remoteMessages) {
+            await _messageBox!.put(msg.id, msg);
+          }
+          notifyListeners();
+        });
   }
 
-  List<Map<String, dynamic>> getRecentChats(String myId) {
-    if (!_isInitialized || _messageBox == null) return [];
+  Future<void> _recalculateRecentChats(String myId) async {
+    if (!_isInitialized || _messageBox == null) return;
 
     final allMessages = _messageBox!.values.toList();
-    final contactsBox = Hive.box<ContactModel>('contacts'); // Obtener contactos
+    final contactsBox = Hive.box<ContactModel>('contacts');
 
     final Map<String, List<MessageModel>> grouped = {};
     for (var msg in allMessages) {
@@ -79,34 +90,60 @@ class ChatProvider extends ChangeNotifier {
       grouped.putIfAbsent(contactId, () => []).add(msg);
     }
 
-    final recentChats = grouped.entries.map((e) {
-      e.value.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-      final contact = contactsBox.get(e.key); // Trae ContactModel
-      return {
-        'contact': contact, // ahora guardamos ContactModel
-        'contactId': e.key,
-        'lastMessage': e.value.first,
-        'allMessages': e.value,
-      };
-    }).toList();
+    final List<Future<Map<String, dynamic>>> recentChatsFutures = grouped
+        .entries
+        .map((e) async {
+          e.value.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+          ContactModel? contact = contactsBox.get(e.key);
+          contact ??= await _userService.fetchUserAsContact(e.key);
+
+          return {
+            'contact': contact,
+            'contactId': e.key,
+            'lastMessage': e.value.first,
+            'allMessages': e.value,
+          };
+        })
+        .toList();
+
+    final calculatedChats = await Future.wait(recentChatsFutures);
 
     recentChats.sort(
       (a, b) => (b['lastMessage'] as MessageModel).timestamp.compareTo(
         (a['lastMessage'] as MessageModel).timestamp,
       ),
     );
+    _recentChats = calculatedChats;
+    notifyListeners();
+  }
 
-    return recentChats;
+  Future<void> getRecentChats(String myId) async {
+    await _recalculateRecentChats(myId);
   }
 
   void listenToAllChats(String myId) {
     if (!_isInitialized) return;
 
-    _chatService.listenToAllMessages(myId).listen((remoteMessages) async {
+    _allChatsSubscription?.cancel();
+
+    _allChatsSubscription = _chatService.listenToAllMessages(myId).listen((
+      remoteMessages,
+    ) async {
       await _messageBox!.putAll({
         for (final msg in remoteMessages) msg.id: msg,
       });
-      notifyListeners();
+
+      await _recalculateRecentChats(myId);
     });
+  }
+
+  Future<void> cancelAllListeners() async {
+    await _allChatsSubscription?.cancel();
+    _allChatsSubscription = null;
+
+    for (final sub in _chatSubscriptions.values) {
+      await sub.cancel();
+    }
+    _chatSubscriptions.clear();
   }
 }

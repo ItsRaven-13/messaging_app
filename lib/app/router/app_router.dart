@@ -45,8 +45,16 @@ final GoRouter appRouter = GoRouter(
       path: '/${AppRoutes.chat}',
       name: AppRoutes.chat,
       builder: (context, state) {
-        final contact = state.extra as ContactModel;
-        return ChatScreen(contactId: contact.uid, contactName: contact.name);
+        final extra = state.extra;
+        return switch (extra) {
+          ContactModel(:final uid, :final name) => ChatScreen(
+            contactId: uid,
+            contactName: name,
+          ),
+          {'contactId': String contactId, 'contactName': String contactName} =>
+            ChatScreen(contactId: contactId, contactName: contactName),
+          _ => const HomeChatScreen(),
+        };
       },
     ),
     GoRoute(

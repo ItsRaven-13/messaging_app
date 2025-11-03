@@ -45,6 +45,8 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
   }
 
   void _verifyCode(AuthProvider auth) async {
+    final smsCode = _codeController.text.trim();
+
     final hasInternet = await NetworkUtils.hasInternetConnection();
     if (!hasInternet) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -54,11 +56,11 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     }
 
     auth.verifyCode(
-      smsCode: _codeController.text.trim(),
+      smsCode: smsCode,
       onSuccess: (_) async {
-        final exists = await auth.userExists();
+        bool profileComplete = await auth.isProfileCompleteLocal();
         if (context.mounted) {
-          if (exists) {
+          if (profileComplete) {
             context.goNamed(AppRoutes.home);
           } else {
             context.goNamed(AppRoutes.profileSetup);

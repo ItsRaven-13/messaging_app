@@ -1,27 +1,76 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:messaging_app/app/router/app_router.dart';
+import 'package:messaging_app/core/utils/network_utils.dart';
 import 'package:messaging_app/features/auth/domain/models/user_model.dart';
 import 'package:messaging_app/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
+import 'package:messaging_app/shared/services/notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
+  final ChatProvider chatProvider;
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _loading = false;
   String? _verificationId;
   User? _user;
 
-  AuthProvider() {
+  AuthProvider({required this.chatProvider}) {
     _user = FirebaseAuth.instance.currentUser;
     FirebaseAuth.instance.authStateChanges().listen((user) {
       _user = user;
       notifyListeners();
+      _syncProfileOnLogin();
     });
   }
 
   bool get loading => _loading;
   User? get user => _user;
   bool get isLoggedIn => _user != null;
+
+  Future<void> saveUserProfileLocal(UserModel user) async {
+    final box = Hive.box('user_profile');
+    await box.put('current_user', user.toMap());
+  }
+
+  Future<UserModel?> getLocalUserProfile() async {
+    final box = Hive.box('user_profile');
+    final map = box.get('current_user');
+    if (map == null) return null;
+    return UserModel.fromMap(Map<String, dynamic>.from(map));
+  }
+
+  Future<bool> isProfileCompleteLocal() async {
+    final user = await getLocalUserProfile();
+    return user != null && user.name != null && user.name!.isNotEmpty;
+  }
+
+  Future<void> syncProfileWithFirebase() async {
+    final user = await getLocalUserProfile();
+    if (user == null || _user == null) return;
+
+    final hasInternet = await NetworkUtils.hasInternetConnection();
+    if (!hasInternet) return;
+
+    try {
+      await _firestore.collection('users').doc(_user!.uid).set(user.toMap());
+      await _authService.saveFcmToken();
+
+      final notificationService = NotificationService();
+      notificationService.setRouter(appRouter);
+      await notificationService.initialize();
+    } catch (e) {
+      debugPrint('Error sincronizando perfil: $e');
+    }
+  }
+
+  void _syncProfileOnLogin() async {
+    if (await isProfileCompleteLocal()) {
+      await syncProfileWithFirebase();
+    }
+  }
 
   void _setLoading(bool value) {
     _loading = value;
@@ -69,6 +118,7 @@ class AuthProvider extends ChangeNotifier {
       _user = userCredential.user;
       _setLoading(false);
       onSuccess(userCredential.user!);
+      _syncProfileOnLogin();
     } catch (e) {
       _setLoading(false);
       onError(e.toString());
@@ -76,15 +126,19 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
-    await _authService.signOut();
+    try {
+      await chatProvider.cancelAllListeners();
+      await _authService.signOut();
+    } catch (e) {
+      debugPrint('Error al cerrar sesión: $e');
+    }
+
+    final notificationService = NotificationService();
+    await notificationService.dispose();
+    await notificationService.cancelAllNotifications();
+
     _user = null;
     notifyListeners();
-  }
-
-  Future<bool> userExists() async {
-    if (_user == null) return false;
-    final doc = await _firestore.collection('users').doc(_user!.uid).get();
-    return doc.exists;
   }
 
   Future<void> saveUserProfile({
@@ -102,7 +156,8 @@ class AuthProvider extends ChangeNotifier {
       colorIndex: colorIndex,
     );
 
-    await _firestore.collection('users').doc(_user!.uid).set(newUser.toMap());
+    await saveUserProfileLocal(newUser);
+    await syncProfileWithFirebase();
   }
 
   String _getInitials(String name) {
