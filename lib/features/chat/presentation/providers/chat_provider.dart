@@ -20,12 +20,96 @@ class ChatProvider extends ChangeNotifier {
   StreamSubscription<List<MessageModel>>? _allChatsSubscription;
   final Map<String, StreamSubscription<List<MessageModel>>> _chatSubscriptions =
       {};
+  final Set<String> _pendingReadMessages = {};
+  Timer? _cleanupTimer;
 
-  Future<void> initialize() async {
+  Future<void> initialize({String? myId}) async {
     if (_isInitialized) return;
-    _messageBox = Hive.box<MessageModel>('messages');
+    _messageBox = await Hive.openBox<MessageModel>('messages');
     _isInitialized = true;
+
+    if (myId != null) {
+      _processPendingReadMessages(myId);
+    }
+    _cleanupTimer = Timer.periodic(const Duration(hours: 1), (_) {
+      cleanupPendingOperations();
+    });
+
     notifyListeners();
+  }
+
+  Future<void> markMessagesAsRead(String myId, String contactId) async {
+    if (!_isInitialized || _messageBox == null) return;
+
+    final unreadMessages = _messageBox!.values
+        .where(
+          (msg) =>
+              msg.receiverId == myId &&
+              msg.senderId == contactId &&
+              !msg.isRead,
+        )
+        .toList();
+
+    final updates = <String, MessageModel>{};
+    for (final msg in unreadMessages) {
+      final updated = MessageModel(
+        id: msg.id,
+        senderId: msg.senderId,
+        receiverId: msg.receiverId,
+        text: msg.text,
+        timestamp: msg.timestamp,
+        isRead: true,
+      );
+      updates[msg.id] = updated;
+      _pendingReadMessages.add(msg.id);
+    }
+    await _messageBox!.putAll(updates);
+    notifyListeners();
+    _syncReadMessagesWithFirebase(myId, contactId, unreadMessages);
+  }
+
+  Future<void> _syncReadMessagesWithFirebase(
+    String myId,
+    String contactId,
+    List<MessageModel> messages,
+  ) async {
+    if (messages.isEmpty) return;
+
+    try {
+      await _chatService.markMessagesAsRead(myId, contactId);
+
+      for (final msg in messages) {
+        _pendingReadMessages.remove(msg.id);
+      }
+    } catch (e) {
+      debugPrint('Error sincronizando mensajes leídos con Firebase: $e');
+    }
+  }
+
+  Future<void> _processPendingReadMessages(String myId) async {
+    if (_pendingReadMessages.isEmpty || _messageBox == null) return;
+
+    try {
+      final pendingMessages = _messageBox!.values
+          .where((msg) => _pendingReadMessages.contains(msg.id))
+          .toList();
+
+      final messagesByContact = <String, List<MessageModel>>{};
+      for (final msg in pendingMessages) {
+        final contactId = msg.senderId;
+        messagesByContact.putIfAbsent(contactId, () => []).add(msg);
+      }
+
+      for (final entry in messagesByContact.entries) {
+        await _syncReadMessagesWithFirebase(myId, entry.key, entry.value);
+      }
+    } catch (e) {
+      debugPrint('Error procesando mensajes leídos pendientes: $e');
+    }
+  }
+
+  Future<void> syncPendingOperations(String myId) async {
+    await _processPendingReadMessages(myId);
   }
 
   List<MessageModel> getMessages(String contactId, String myId) {
@@ -90,29 +174,32 @@ class ChatProvider extends ChangeNotifier {
       grouped.putIfAbsent(contactId, () => []).add(msg);
     }
 
-    final List<Future<Map<String, dynamic>>> recentChatsFutures = grouped
-        .entries
-        .map((e) async {
-          e.value.sort((a, b) => b.timestamp.compareTo(a.timestamp));
-          ContactModel? contact = contactsBox.get(e.key);
-          contact ??= await _userService.fetchUserAsContact(e.key);
+    final List<Map<String, dynamic>> calculatedChats = [];
 
-          return {
-            'contact': contact,
-            'contactId': e.key,
-            'lastMessage': e.value.first,
-            'allMessages': e.value,
-          };
-        })
-        .toList();
+    for (final entry in grouped.entries) {
+      entry.value.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+      ContactModel? contact = contactsBox.get(entry.key);
+      contact ??= await _userService.fetchUserAsContact(entry.key);
 
-    final calculatedChats = await Future.wait(recentChatsFutures);
+      final unreadCount = entry.value
+          .where((msg) => msg.receiverId == myId && !msg.isRead)
+          .length;
 
-    recentChats.sort(
+      calculatedChats.add({
+        'contact': contact,
+        'contactId': entry.key,
+        'lastMessage': entry.value.first,
+        'allMessages': entry.value,
+        'unreadCount': unreadCount,
+      });
+    }
+
+    calculatedChats.sort(
       (a, b) => (b['lastMessage'] as MessageModel).timestamp.compareTo(
         (a['lastMessage'] as MessageModel).timestamp,
       ),
     );
+
     _recentChats = calculatedChats;
     notifyListeners();
   }
@@ -145,5 +232,38 @@ class ChatProvider extends ChangeNotifier {
       await sub.cancel();
     }
     _chatSubscriptions.clear();
+  }
+
+  Future<void> cleanupPendingOperations() async {
+    final now = DateTime.now();
+    final messagesToRemove = <String>[];
+
+    if (_messageBox == null) return;
+
+    for (final messageId in _pendingReadMessages) {
+      final message = _messageBox!.get(messageId);
+      if (message != null) {
+        if (now.difference(message.timestamp).inDays > 1) {
+          messagesToRemove.add(messageId);
+        }
+      } else {
+        messagesToRemove.add(messageId);
+      }
+    }
+
+    for (final messageId in messagesToRemove) {
+      _pendingReadMessages.remove(messageId);
+    }
+  }
+
+  @override
+  void dispose() {
+    _cleanupTimer?.cancel();
+    _allChatsSubscription?.cancel();
+    for (final sub in _chatSubscriptions.values) {
+      sub.cancel();
+    }
+    _chatSubscriptions.clear();
+    super.dispose();
   }
 }

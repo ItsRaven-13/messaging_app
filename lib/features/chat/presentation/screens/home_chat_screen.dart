@@ -26,7 +26,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
     final myId = auth.user?.uid ?? 'myId';
 
     Future.microtask(() async {
-      await chatProvider.initialize();
+      await chatProvider.initialize(myId: myId);
       await chatProvider.getRecentChats(myId);
       chatProvider.listenToAllChats(myId);
     });
@@ -143,7 +143,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              if (1 > 0) ...[
+                              if ((chat['unreadCount'] ?? 0) > 0) ...[
                                 Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 8,
@@ -160,7 +160,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                                     minHeight: 24,
                                   ),
                                   child: Text(
-                                    '10',
+                                    '${chat['unreadCount']}',
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold,

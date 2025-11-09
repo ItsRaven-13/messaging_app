@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 
 class ChatService {
@@ -27,6 +28,75 @@ class ChatService {
               .map((doc) => MessageModel.fromMap(doc.data()))
               .toList(),
         );
+  }
+
+  Future<void> markMessagesAsRead(String myId, String contactId) async {
+    try {
+      final chatId = _getChatId(myId, contactId);
+      final query = await _firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .where('receiverId', isEqualTo: myId)
+          .where('isRead', isEqualTo: false)
+          .get();
+
+      final batch = _firestore.batch();
+      for (final doc in query.docs) {
+        batch.update(doc.reference, {'isRead': true});
+      }
+
+      if (query.docs.isNotEmpty) {
+        await batch.commit();
+      }
+    } catch (e) {
+      debugPrint('Error al marcar mensajes como leídos: $e');
+    }
+  }
+
+  Future<void> markMessageAsRead(String messageId, String myId) async {
+    try {
+      final query = await _firestore
+          .collectionGroup('messages')
+          .where('id', isEqualTo: messageId)
+          .where('receiverId', isEqualTo: myId)
+          .limit(1)
+          .get();
+
+      if (query.docs.isNotEmpty) {
+        await query.docs.first.reference.update({'isRead': true});
+      }
+    } catch (e) {
+      debugPrint('Error al marcar mensaje $messageId como leído: $e');
+      await _markMessageByChat(messageId, myId);
+    }
+  }
+
+  Future<void> _markMessageByChat(String messageId, String myId) async {
+    try {
+      final allChats = await _firestore.collection('chats').get();
+
+      for (final chatDoc in allChats.docs) {
+        try {
+          final messageDoc = await chatDoc.reference
+              .collection('messages')
+              .doc(messageId)
+              .get();
+
+          if (messageDoc.exists && messageDoc.data()?['receiverId'] == myId) {
+            await messageDoc.reference.update({'isRead': true});
+            debugPrint('Mensaje marcado como leído en chat ${chatDoc.id}');
+            return;
+          }
+        } catch (e) {
+          continue;
+        }
+      }
+
+      debugPrint('Mensaje $messageId no encontrado en ningún chat');
+    } catch (e) {
+      debugPrint('Error en marcado alternativo: $e');
+    }
   }
 
   Stream<List<MessageModel>> listenToAllMessages(String myId) {

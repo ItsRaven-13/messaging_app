@@ -33,9 +33,28 @@ class _ChatScreenState extends State<ChatScreen> {
     final myId = auth.user?.uid ?? 'myId';
 
     Future.microtask(() async {
-      await chatProvider.initialize();
+      await chatProvider.initialize(myId: myId);
       chatProvider.listenToChat(myId, widget.contactId);
+      chatProvider.markMessagesAsRead(myId, widget.contactId);
     });
+  }
+
+  void _onNewMessage() {
+    final chatProvider = context.read<ChatProvider>();
+    final auth = context.read<AuthProvider>();
+    final myId = auth.user?.uid ?? 'myId';
+
+    chatProvider.markMessagesAsRead(myId, widget.contactId);
+  }
+
+  void _checkForNewMessages(List<MessageModel> messages, String myId) {
+    final newMessages = messages.where(
+      (msg) => msg.receiverId == myId && !msg.isRead,
+    );
+
+    if (newMessages.isNotEmpty) {
+      _onNewMessage();
+    }
   }
 
   void _scrollToBottom() {
@@ -59,7 +78,10 @@ class _ChatScreenState extends State<ChatScreen> {
     }
 
     final messages = chatProvider.getMessages(widget.contactId, myId);
-    WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkForNewMessages(messages, myId);
+      _scrollToBottom();
+    });
 
     return Container(
       decoration: BoxDecoration(

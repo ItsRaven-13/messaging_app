@@ -20,12 +20,16 @@ class MessageModel extends HiveObject {
   @HiveField(4)
   final DateTime timestamp;
 
+  @HiveField(5)
+  final bool isRead;
+
   MessageModel({
     required this.id,
     required this.senderId,
     required this.receiverId,
     required this.text,
     required this.timestamp,
+    this.isRead = false,
   });
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
@@ -43,6 +47,7 @@ class MessageModel extends HiveObject {
       receiverId: map['receiverId'] ?? '',
       text: map['text'] ?? '',
       timestamp: parsed,
+      isRead: map['isRead'] ?? false,
     );
   }
 
@@ -55,6 +60,7 @@ class MessageModel extends HiveObject {
       'timestamp': useServerTime
           ? FieldValue.serverTimestamp()
           : timestamp.toUtc().millisecondsSinceEpoch,
+      'isRead': isRead,
     };
   }
 }
