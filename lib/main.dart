@@ -28,6 +28,7 @@ Future<void> main(List<String> args) async {
   );
   await Hive.initFlutter();
   Hive.registerAdapter(ContactModelAdapter());
+  Hive.registerAdapter(MessageTypeAdapter());
   Hive.registerAdapter(MessageModelAdapter());
   await Hive.openBox('user_profile');
   await Hive.openBox<ContactModel>('contacts');

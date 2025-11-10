@@ -132,13 +132,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                             contactName,
                             style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text(
-                            lastMsg.text,
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                            ),
-                          ),
+                          subtitle: _buildMessagePreview(lastMsg),
                           trailing: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -202,5 +196,29 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
         child: const Icon(Icons.message_rounded),
       ),
     );
+  }
+
+  Widget _buildMessagePreview(MessageModel message) {
+    if (message.hasImage) {
+      return Row(
+        children: [
+          const Icon(Icons.photo, size: 16, color: Colors.grey),
+          const SizedBox(width: 4),
+          Text(
+            message.text.isNotEmpty ? message.text : 'Imagen',
+            style: const TextStyle(color: Colors.grey, fontSize: 14),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      );
+    } else {
+      return Text(
+        message.text,
+        style: const TextStyle(color: Colors.grey, fontSize: 14),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      );
+    }
   }
 }

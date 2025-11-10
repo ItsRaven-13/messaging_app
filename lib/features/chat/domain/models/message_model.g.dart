@@ -23,13 +23,15 @@ class MessageModelAdapter extends TypeAdapter<MessageModel> {
       text: fields[3] as String,
       timestamp: fields[4] as DateTime,
       isRead: fields[5] as bool,
+      imageUrl: fields[6] as String?,
+      type: fields[7] as MessageType,
     );
   }
 
   @override
   void write(BinaryWriter writer, MessageModel obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -41,7 +43,11 @@ class MessageModelAdapter extends TypeAdapter<MessageModel> {
       ..writeByte(4)
       ..write(obj.timestamp)
       ..writeByte(5)
-      ..write(obj.isRead);
+      ..write(obj.isRead)
+      ..writeByte(6)
+      ..write(obj.imageUrl)
+      ..writeByte(7)
+      ..write(obj.type);
   }
 
   @override
@@ -51,6 +57,50 @@ class MessageModelAdapter extends TypeAdapter<MessageModel> {
   bool operator ==(Object other) =>
       identical(this, other) ||
       other is MessageModelAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class MessageTypeAdapter extends TypeAdapter<MessageType> {
+  @override
+  final int typeId = 3;
+
+  @override
+  MessageType read(BinaryReader reader) {
+    switch (reader.readByte()) {
+      case 0:
+        return MessageType.text;
+      case 1:
+        return MessageType.image;
+      case 2:
+        return MessageType.textWithImage;
+      default:
+        return MessageType.text;
+    }
+  }
+
+  @override
+  void write(BinaryWriter writer, MessageType obj) {
+    switch (obj) {
+      case MessageType.text:
+        writer.writeByte(0);
+        break;
+      case MessageType.image:
+        writer.writeByte(1);
+        break;
+      case MessageType.textWithImage:
+        writer.writeByte(2);
+        break;
+    }
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is MessageTypeAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
