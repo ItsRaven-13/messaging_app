@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:messaging_app/app/theme/theme_extensions.dart';
@@ -24,10 +25,15 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _controller = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
+    _initializeChat();
+  }
+
+  void _initializeChat() {
     final chatProvider = context.read<ChatProvider>();
     final auth = context.read<AuthProvider>();
     final myId = auth.user?.uid ?? 'myId';
@@ -39,12 +45,26 @@ class _ChatScreenState extends State<ChatScreen> {
     });
   }
 
-  void _onNewMessage() {
+  Future<void> _sendImage() async {
     final chatProvider = context.read<ChatProvider>();
     final auth = context.read<AuthProvider>();
     final myId = auth.user?.uid ?? 'myId';
 
-    chatProvider.markMessagesAsRead(myId, widget.contactId);
+    try {
+      await chatProvider.sendImageMessage(
+        senderId: myId,
+        receiverId: widget.contactId,
+        caption: _controller.text.trim(),
+      );
+      _controller.clear();
+      _scrollToBottom();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al enviar imagen: $e')));
+      }
+    }
   }
 
   void _checkForNewMessages(List<MessageModel> messages, String myId) {
@@ -65,6 +85,14 @@ class _ChatScreenState extends State<ChatScreen> {
         curve: Curves.easeOut,
       );
     }
+  }
+
+  void _onNewMessage() {
+    final chatProvider = context.read<ChatProvider>();
+    final auth = context.read<AuthProvider>();
+    final myId = auth.user?.uid ?? 'myId';
+
+    chatProvider.markMessagesAsRead(myId, widget.contactId);
   }
 
   @override
@@ -115,6 +143,28 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
         body: Column(
           children: [
+            if (chatProvider.isUploadingImage)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Column(
+                  children: [
+                    LinearProgressIndicator(
+                      value: chatProvider.uploadProgress,
+                      backgroundColor: Colors.grey[300],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      'Subiendo imagen...',
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
             Expanded(
               child: ListView.builder(
                 controller: _scrollController,
@@ -128,8 +178,12 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
             _ChatInputArea(
               controller: _controller,
+              focusNode: _focusNode,
               onSend: (text) async {
                 if (text.trim().isEmpty) return;
+                final chatProvider = context.read<ChatProvider>();
+                final auth = context.read<AuthProvider>();
+                final myId = auth.user?.uid ?? 'myId';
                 await chatProvider.sendMessage(
                   senderId: myId,
                   receiverId: widget.contactId,
@@ -138,6 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 _controller.clear();
                 _scrollToBottom();
               },
+              onSendImage: _sendImage,
             ),
           ],
         ),
@@ -151,6 +206,34 @@ class MessageBubble extends StatelessWidget {
   final String myId;
 
   const MessageBubble({super.key, required this.message, required this.myId});
+
+  void _showImagePreview(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(20),
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              child: CachedNetworkImage(
+                imageUrl: imageUrl,
+                fit: BoxFit.contain,
+              ),
+            ),
+            Positioned(
+              top: 10,
+              right: 10,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white, size: 30),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -182,23 +265,110 @@ class MessageBubble extends StatelessWidget {
                 bottomLeft: Radius.circular(isMe ? 12 : 0),
                 bottomRight: Radius.circular(isMe ? 0 : 12),
               ),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.2),
-                  spreadRadius: 1,
-                  blurRadius: 2,
-                  offset: const Offset(0, 1),
-                ),
+              boxShadow: message.hasImage
+                  ? []
+                  : [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.2),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                if (message.hasImage)
+                  Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: GestureDetector(
+                      onTap: () =>
+                          _showImagePreview(context, message.imageUrl!),
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                        ),
+                        child: Stack(
+                          children: [
+                            CachedNetworkImage(
+                              imageUrl: message.imageUrl!,
+                              width: double.infinity,
+                              height: 200,
+                              fit: BoxFit.cover,
+                              placeholder: (context, url) => Container(
+                                height: 200,
+                                color: Colors.grey[300],
+                                child: const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) => Container(
+                                height: 200,
+                                color: Colors.grey[300],
+                                child: const Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.error, size: 40),
+                                    SizedBox(height: 8),
+                                    Text('Error al cargar imagen'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            if (message.type == MessageType.image)
+                              Positioned(
+                                top: 8,
+                                right: 8,
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black54,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.photo,
+                                    color: Colors.white,
+                                    size: 16,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                if (message.text.isNotEmpty)
+                  Container(
+                    padding: EdgeInsets.only(
+                      left: 12,
+                      right: 12,
+                      top: message.hasImage ? 0 : 8,
+                      bottom: 8,
+                    ),
+                    child: Text(
+                      message.text,
+                      style: TextStyle(color: textColor),
+                    ),
+                  ),
               ],
             ),
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            child: Text(message.text, style: TextStyle(color: textColor)),
           ),
-          const SizedBox(height: 2),
-          Text(
-            '${localTimestamp.hour}:${localTimestamp.minute.toString().padLeft(2, '0')}',
-            style: const TextStyle(fontSize: 10, color: Colors.grey),
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: Text(
+              '${localTimestamp.hour}:${localTimestamp.minute.toString().padLeft(2, '0')}',
+              style: const TextStyle(fontSize: 10, color: Colors.grey),
+            ),
           ),
+          if (isMe)
+            Icon(
+              message.isRead ? Icons.done_all : Icons.done,
+              size: 14,
+              color: message.isRead ? Colors.blue : Colors.grey,
+            ),
         ],
       ),
     );
@@ -207,9 +377,16 @@ class MessageBubble extends StatelessWidget {
 
 class _ChatInputArea extends StatelessWidget {
   final TextEditingController controller;
+  final FocusNode focusNode;
   final Function(String) onSend;
+  final VoidCallback onSendImage;
 
-  const _ChatInputArea({required this.controller, required this.onSend});
+  const _ChatInputArea({
+    required this.controller,
+    required this.focusNode,
+    required this.onSend,
+    required this.onSendImage,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -227,10 +404,15 @@ class _ChatInputArea extends StatelessWidget {
       ),
       child: Row(
         children: [
-          IconButton(icon: const Icon(Icons.mic), onPressed: () {}),
+          IconButton(
+            icon: const Icon(Icons.photo_library),
+            onPressed: onSendImage,
+            tooltip: 'Enviar imagen',
+          ),
           Expanded(
             child: TextField(
               controller: controller,
+              focusNode: focusNode,
               decoration: const InputDecoration(
                 hintText: 'Escribe un mensaje...',
                 filled: true,
@@ -241,6 +423,7 @@ class _ChatInputArea extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.send),
             onPressed: () => onSend(controller.text),
+            tooltip: 'Enviar mensaje',
           ),
         ],
       ),

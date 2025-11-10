@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
@@ -44,15 +43,7 @@ class NotificationService {
     );
 
     _onMessageSub = FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      final notification = message.notification;
-      if (notification != null) {
-        _showNotification(
-          notification.title ?? 'Nuevo mensaje',
-          notification.body ?? '',
-          message.data['senderId'],
-          message.data['senderName'],
-        );
-      }
+      _handleIncomingMessage(message);
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
@@ -70,31 +61,80 @@ class NotificationService {
     debugPrint("FCM Token: $token");
   }
 
+  void _handleIncomingMessage(RemoteMessage message) {
+    final notification = message.notification;
+    final data = message.data;
+
+    if (notification != null) {
+      final hasImage = data['hasImage'] == 'true';
+
+      _showNotification(
+        notification.title ?? 'Nuevo mensaje',
+        notification.body ?? '',
+        data['senderId'],
+        data['senderName'],
+        hasImage: hasImage,
+        messageData: data,
+      );
+    }
+  }
+
   Future<void> _showNotification(
     String title,
     String body,
     String? senderId,
-    String? senderName,
-  ) async {
+    String? senderName, {
+    bool hasImage = false,
+    Map<String, dynamic>? messageData,
+  }) async {
     if (senderId == null) return;
+
     final contactsBox = Hive.box<ContactModel>('contacts');
     final contact = contactsBox.get(senderId);
-
     final displayName = contact?.name ?? senderName ?? senderId;
 
-    const androidDetails = AndroidNotificationDetails(
-      'chat_channel',
-      'Mensajes',
-      importance: Importance.max,
-      priority: Priority.high,
-      playSound: true,
-      enableVibration: true,
-    );
+    AndroidNotificationDetails androidDetails;
 
-    const notificationDetails = NotificationDetails(android: androidDetails);
+    if (hasImage) {
+      androidDetails = AndroidNotificationDetails(
+        'chat_channel',
+        'Mensajes',
+        channelDescription: 'Notificaciones de mensajes de chat',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        color: const Color(0xFF4CAF50),
+        ledColor: const Color(0xFF4CAF50),
+        ledOnMs: 1000,
+        ledOffMs: 500,
+        // Añadir un icono personalizado si tienes uno para imágenes
+        // largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_image_notification'),
+        autoCancel: true,
+        timeoutAfter: 30000,
+      );
+    } else {
+      androidDetails = AndroidNotificationDetails(
+        'chat_channel',
+        'Mensajes',
+        channelDescription: 'Notificaciones de mensajes de chat',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        color: const Color(0xFF2196F3),
+        ledColor: const Color(0xFF2196F3),
+        ledOnMs: 1000,
+        ledOffMs: 500,
+        autoCancel: true,
+        timeoutAfter: 30000,
+      );
+    }
+
+    final notificationDetails = NotificationDetails(android: androidDetails);
 
     await _localNotifications.show(
-      0,
+      DateTime.now().millisecondsSinceEpoch.remainder(100000),
       displayName,
       body,
       notificationDetails,

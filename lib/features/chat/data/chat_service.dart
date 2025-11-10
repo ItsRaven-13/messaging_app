@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
+import 'package:uuid/uuid.dart';
 
 class ChatService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -13,6 +14,27 @@ class ChatService {
         .collection('messages')
         .doc(message.id)
         .set({...message.toMap(), 'timestamp': FieldValue.serverTimestamp()});
+  }
+
+  Future<void> sendImageMessage({
+    required String senderId,
+    required String receiverId,
+    required String imageUrl,
+    String? caption,
+  }) async {
+    final message = MessageModel(
+      id: const Uuid().v4(),
+      senderId: senderId,
+      receiverId: receiverId,
+      text: caption ?? '',
+      timestamp: DateTime.now().toUtc(),
+      imageUrl: imageUrl,
+      type: caption != null && caption.isNotEmpty
+          ? MessageType.textWithImage
+          : MessageType.image,
+    );
+
+    await sendMessage(message);
   }
 
   Stream<List<MessageModel>> listenToMessages(String myId, String contactId) {

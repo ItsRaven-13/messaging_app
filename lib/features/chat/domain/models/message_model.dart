@@ -23,6 +23,12 @@ class MessageModel extends HiveObject {
   @HiveField(5)
   final bool isRead;
 
+  @HiveField(6)
+  final String? imageUrl;
+
+  @HiveField(7)
+  final MessageType type;
+
   MessageModel({
     required this.id,
     required this.senderId,
@@ -30,6 +36,8 @@ class MessageModel extends HiveObject {
     required this.text,
     required this.timestamp,
     this.isRead = false,
+    this.imageUrl,
+    this.type = MessageType.text,
   });
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
@@ -48,6 +56,11 @@ class MessageModel extends HiveObject {
       text: map['text'] ?? '',
       timestamp: parsed,
       isRead: map['isRead'] ?? false,
+      imageUrl: map['imageUrl'],
+      type: MessageType.values.firstWhere(
+        (e) => e.name == (map['type'] ?? 'text'),
+        orElse: () => MessageType.text,
+      ),
     );
   }
 
@@ -61,6 +74,22 @@ class MessageModel extends HiveObject {
           ? FieldValue.serverTimestamp()
           : timestamp.toUtc().millisecondsSinceEpoch,
       'isRead': isRead,
+      'imageUrl': imageUrl,
+      'type': type.name,
     };
   }
+
+  bool get hasImage => imageUrl != null && imageUrl!.isNotEmpty;
+}
+
+@HiveType(typeId: 3)
+enum MessageType {
+  @HiveField(0)
+  text,
+
+  @HiveField(1)
+  image,
+
+  @HiveField(2)
+  textWithImage,
 }
