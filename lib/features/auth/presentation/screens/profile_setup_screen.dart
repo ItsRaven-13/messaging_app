@@ -16,6 +16,7 @@ class ProfileSetupScreen extends StatefulWidget {
 class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _infoController = TextEditingController();
   int _selectedColorIndex = 0;
 
   String get _initials {
@@ -95,14 +96,27 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 ),
                 onChanged: (_) => setState(() {}),
               ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _infoController,
+                validator: ProfileValidator.validateInfo,
+                maxLength: 50,
+                decoration: const InputDecoration(
+                  labelText: 'Info.',
+                  border: OutlineInputBorder(),
+                  counterText: '',
+                ),
+              ),
               const Spacer(),
               ElevatedButton(
                 onPressed: () async {
                   if (!_formKey.currentState!.validate()) return;
                   final name = _nameController.text.trim();
+                  final info = _infoController.text.trim();
 
                   await auth.saveUserProfile(
                     name: name,
+                    info: info,
                     colorIndex: _selectedColorIndex,
                   );
 

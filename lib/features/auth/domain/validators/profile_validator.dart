@@ -9,4 +9,11 @@ class ProfileValidator {
     }
     return null;
   }
+
+  static String? validateInfo(String? info) {
+    if (info == null || info.isEmpty) {
+      return 'La información es obligatoria';
+    }
+    return null;
+  }
 }
