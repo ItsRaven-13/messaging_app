@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -15,7 +14,6 @@ import 'package:messaging_app/features/contacts/presentation/providers/contacts_
 import 'package:messaging_app/firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
-import 'package:messaging_app/shared/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main(List<String> args) async {
@@ -37,13 +35,6 @@ Future<void> main(List<String> args) async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final chatProvider = ChatProvider();
 
-  final authUser = FirebaseAuth.instance.currentUser;
-  if (authUser != null) {
-    final notificationService = NotificationService();
-    notificationService.setRouter(appRouter);
-    await notificationService.initialize();
-  }
-
   runApp(
     MultiProvider(
       providers: [
@@ -52,7 +43,7 @@ Future<void> main(List<String> args) async {
         ),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
         ChangeNotifierProvider(create: (_) => ContactsProvider()),
-        ChangeNotifierProvider(create: (_) => chatProvider),
+        ChangeNotifierProvider.value(value: chatProvider),
       ],
       child: MyApp(router: appRouter),
     ),

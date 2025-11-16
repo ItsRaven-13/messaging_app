@@ -143,6 +143,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> saveUserProfile({
     required String name,
+    required String info,
     required int colorIndex,
   }) async {
     if (_user == null) return;
@@ -152,6 +153,7 @@ class AuthProvider extends ChangeNotifier {
       uid: _user!.uid,
       phoneNumber: _user!.phoneNumber ?? '',
       name: name,
+      info: info,
       initials: initials,
       colorIndex: colorIndex,
     );

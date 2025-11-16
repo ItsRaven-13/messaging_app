@@ -7,7 +7,6 @@ import 'package:messaging_app/features/auth/presentation/providers/auth_provider
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
-import 'package:messaging_app/screens/user_profile_screen.dart';
 import 'package:provider/provider.dart';
 
 class HomeChatScreen extends StatefulWidget {
@@ -61,12 +60,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'perfil') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const UserProfileScreen(),
-                  ),
-                );
+                context.pushNamed(AppRoutes.profileEdit);
               } else if (value == 'contactos') {
                 context.pushNamed(AppRoutes.contacts);
               } else if (value == 'new_group') {
