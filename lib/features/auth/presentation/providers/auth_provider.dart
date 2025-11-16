@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:messaging_app/app/router/app_router.dart';
 import 'package:messaging_app/core/utils/network_utils.dart';
 import 'package:messaging_app/features/auth/domain/models/user_model.dart';
 import 'package:messaging_app/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
+import 'package:messaging_app/shared/services/notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ChatProvider chatProvider;
@@ -55,6 +57,10 @@ class AuthProvider extends ChangeNotifier {
     try {
       await _firestore.collection('users').doc(_user!.uid).set(user.toMap());
       await _authService.saveFcmToken();
+
+      final notificationService = NotificationService();
+      notificationService.setRouter(appRouter);
+      await notificationService.initialize();
     } catch (e) {
       debugPrint('Error sincronizando perfil: $e');
     }
@@ -126,6 +132,10 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error al cerrar sesión: $e');
     }
+
+    final notificationService = NotificationService();
+    await notificationService.dispose();
+    await notificationService.cancelAllNotifications();
 
     _user = null;
     notifyListeners();

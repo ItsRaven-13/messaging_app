@@ -14,16 +14,11 @@ import 'package:messaging_app/features/contacts/presentation/providers/contacts_
 import 'package:messaging_app/firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
-import 'package:messaging_app/shared/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final notificationService = NotificationService();
-  notificationService.setRouter(appRouter);
-  await notificationService.initialize();
-
   await FirebaseAppCheck.instance.activate(
     providerAndroid: kDebugMode
         ? AndroidDebugProvider()
