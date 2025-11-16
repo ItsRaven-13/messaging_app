@@ -15,6 +15,24 @@ class UserModel {
     this.colorIndex,
   });
 
+  UserModel copyWith({
+    String? uid,
+    String? phoneNumber,
+    String? name,
+    String? info,
+    String? initials,
+    int? colorIndex,
+  }) {
+    return UserModel(
+      uid: uid ?? this.uid,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      name: name ?? this.name,
+      info: info ?? this.info,
+      initials: initials ?? this.initials,
+      colorIndex: colorIndex ?? this.colorIndex,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'uid': uid,

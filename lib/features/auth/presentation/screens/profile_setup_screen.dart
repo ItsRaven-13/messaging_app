@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/features/auth/domain/validators/profile_validator.dart';
+import 'package:messaging_app/features/auth/presentation/widgets/avatar_color_picker.dart';
+import 'package:messaging_app/features/auth/presentation/widgets/avatar_preview.dart';
 import 'package:provider/provider.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
@@ -42,47 +44,19 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
           child: Column(
             children: [
               const SizedBox(height: 40),
-              CircleAvatar(
-                radius: 45,
+              AvatarPreview(
+                initials: _initials,
                 backgroundColor: avatarColors[_selectedColorIndex],
-                child: _initials.isNotEmpty
-                    ? Text(_initials, style: const TextStyle(fontSize: 30))
-                    : const Icon(Icons.add_a_photo_outlined, size: 40),
               ),
               const SizedBox(height: 30),
-              Wrap(
-                spacing: 16,
-                children: List.generate(avatarColors.length, (index) {
-                  final color = avatarColors[index];
-                  return GestureDetector(
-                    onTap: () => setState(() => _selectedColorIndex = index),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        border: Border.all(
-                          color: _selectedColorIndex == index
-                              ? Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.3)
-                              : Colors.white,
-                          width: 1.5, // grosor del borde
-                        ),
-                      ),
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: color,
-                        child: _selectedColorIndex == index
-                            ? Icon(
-                                Icons.check,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurface.withValues(alpha: 0.3),
-                              )
-                            : null,
-                      ),
-                    ),
-                  );
-                }),
+              AvatarColorPicker(
+                colors: avatarColors,
+                selectedIndex: _selectedColorIndex,
+                onColorSelected: (index) {
+                  setState(() {
+                    _selectedColorIndex = index;
+                  });
+                },
               ),
               const SizedBox(height: 30),
               TextFormField(

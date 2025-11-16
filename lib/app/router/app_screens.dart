@@ -5,3 +5,4 @@ export 'package:messaging_app/features/auth/presentation/screens/otp_verificatio
 export 'package:messaging_app/features/chat/presentation/screens/home_chat_screen.dart';
 export 'package:messaging_app/features/contacts/presentation/contact_list_screen.dart';
 export 'package:messaging_app/features/auth/presentation/screens/profile_setup_screen.dart';
+export 'package:messaging_app/features/auth/presentation/screens/profile_edit_screen.dart';
