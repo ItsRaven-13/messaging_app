@@ -38,72 +38,74 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
       appBar: AppBar(title: const Text('Configura tu perfil')),
       body: Padding(
         padding: const EdgeInsets.all(20),
-        child: Form(
-          key: _formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: Column(
-            children: [
-              const SizedBox(height: 40),
-              AvatarPreview(
-                initials: _initials,
-                backgroundColor: avatarColors[_selectedColorIndex],
-              ),
-              const SizedBox(height: 30),
-              AvatarColorPicker(
-                colors: avatarColors,
-                selectedIndex: _selectedColorIndex,
-                onColorSelected: (index) {
-                  setState(() {
-                    _selectedColorIndex = index;
-                  });
-                },
-              ),
-              const SizedBox(height: 30),
-              TextFormField(
-                controller: _nameController,
-                validator: ProfileValidator.validate,
-                maxLength: 20,
-                decoration: const InputDecoration(
-                  labelText: 'Nombre de usuario',
-                  border: OutlineInputBorder(),
-                  counterText: '',
+        child: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Column(
+              children: [
+                const SizedBox(height: 40),
+                AvatarPreview(
+                  initials: _initials,
+                  backgroundColor: avatarColors[_selectedColorIndex],
                 ),
-                onChanged: (_) => setState(() {}),
-              ),
-              const SizedBox(height: 20),
-              TextFormField(
-                controller: _infoController,
-                validator: ProfileValidator.validateInfo,
-                maxLength: 50,
-                decoration: const InputDecoration(
-                  labelText: 'Info.',
-                  border: OutlineInputBorder(),
-                  counterText: '',
+                const SizedBox(height: 30),
+                AvatarColorPicker(
+                  colors: avatarColors,
+                  selectedIndex: _selectedColorIndex,
+                  onColorSelected: (index) {
+                    setState(() {
+                      _selectedColorIndex = index;
+                    });
+                  },
                 ),
-              ),
-              const Spacer(),
-              ElevatedButton(
-                onPressed: () async {
-                  if (!_formKey.currentState!.validate()) return;
-                  final name = _nameController.text.trim();
-                  final info = _infoController.text.trim();
+                const SizedBox(height: 30),
+                TextFormField(
+                  controller: _nameController,
+                  validator: ProfileValidator.validate,
+                  maxLength: 20,
+                  decoration: const InputDecoration(
+                    labelText: 'Nombre de usuario',
+                    border: OutlineInputBorder(),
+                    counterText: '',
+                  ),
+                  onChanged: (_) => setState(() {}),
+                ),
+                const SizedBox(height: 20),
+                TextFormField(
+                  controller: _infoController,
+                  validator: ProfileValidator.validateInfo,
+                  maxLength: 50,
+                  decoration: const InputDecoration(
+                    labelText: 'Info.',
+                    border: OutlineInputBorder(),
+                    counterText: '',
+                  ),
+                ),
+                const SizedBox(height: 40),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (!_formKey.currentState!.validate()) return;
+                    final name = _nameController.text.trim();
+                    final info = _infoController.text.trim();
 
-                  await auth.saveUserProfile(
-                    name: name,
-                    info: info,
-                    colorIndex: _selectedColorIndex,
-                  );
+                    await auth.saveUserProfile(
+                      name: name,
+                      info: info,
+                      colorIndex: _selectedColorIndex,
+                    );
 
-                  if (context.mounted) {
-                    context.goNamed(AppRoutes.home);
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  minimumSize: const Size(double.infinity, 48),
+                    if (context.mounted) {
+                      context.goNamed(AppRoutes.home);
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    minimumSize: const Size(double.infinity, 48),
+                  ),
+                  child: const Text('Guardar y continuar'),
                 ),
-                child: const Text('Guardar y continuar'),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

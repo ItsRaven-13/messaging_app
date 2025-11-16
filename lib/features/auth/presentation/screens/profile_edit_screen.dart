@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
+import 'package:messaging_app/features/auth/domain/validators/profile_validator.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:messaging_app/features/auth/presentation/widgets/avatar_color_picker.dart';
 import 'package:messaging_app/features/auth/presentation/widgets/avatar_preview.dart';
@@ -15,6 +16,7 @@ class ProfileEditScreen extends StatefulWidget {
 }
 
 class _ProfileEditScreenState extends State<ProfileEditScreen> {
+  final _formKey = GlobalKey<FormState>();
   late TextEditingController nameController;
   late TextEditingController infoController;
   late TextEditingController phoneController;
@@ -58,61 +60,74 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
             appBar: AppBar(title: const Text("Mi Perfil")),
             body: Padding(
               padding: const EdgeInsets.all(20),
-              child: Column(
-                children: [
-                  AvatarPreview(
-                    initials: _initials(nameController.text),
-                    backgroundColor: AvatarColors(
-                      context,
-                    ).colors[provider.selectedColorIndex],
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Column(
+                    children: [
+                      AvatarPreview(
+                        initials: _initials(nameController.text),
+                        backgroundColor: AvatarColors(
+                          context,
+                        ).colors[provider.selectedColorIndex],
+                      ),
+                      const SizedBox(height: 30),
+                      AvatarColorPicker(
+                        colors: AvatarColors(context).colors,
+                        selectedIndex: provider.selectedColorIndex,
+                        onColorSelected: provider.updateColorIndex,
+                      ),
+                      const SizedBox(height: 20),
+                      TextFormField(
+                        controller: nameController,
+                        validator: ProfileValidator.validate,
+                        maxLength: 20,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.person),
+                          labelText: "Nombre",
+                          suffixIcon: Icon(Icons.edit),
+                          counterText: '',
+                        ),
+                        onChanged: provider.updateName,
+                      ),
+                      const SizedBox(height: 15),
+                      TextFormField(
+                        controller: infoController,
+                        validator: ProfileValidator.validateInfo,
+                        maxLength: 50,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.info),
+                          labelText: "Info.",
+                          suffixIcon: Icon(Icons.edit),
+                          counterText: '',
+                        ),
+                        onChanged: provider.updateInfo,
+                      ),
+                      const SizedBox(height: 15),
+                      TextField(
+                        readOnly: true,
+                        controller: phoneController,
+                        decoration: const InputDecoration(
+                          prefixIcon: Icon(Icons.phone),
+                          labelText: "Número de Teléfono",
+                        ),
+                      ),
+                      const SizedBox(height: 30),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (!_formKey.currentState!.validate()) return;
+                          await provider.saveChanges();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text("Perfil actualizado")),
+                          );
+                          context.pop();
+                        },
+                        child: const Text("Guardar Cambios"),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 30),
-                  AvatarColorPicker(
-                    colors: AvatarColors(context).colors,
-                    selectedIndex: provider.selectedColorIndex,
-                    onColorSelected: provider.updateColorIndex,
-                  ),
-                  const SizedBox(height: 20),
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.person),
-                      labelText: "Nombre",
-                      suffixIcon: Icon(Icons.edit),
-                    ),
-                    onChanged: provider.updateName,
-                  ),
-                  const SizedBox(height: 15),
-                  TextField(
-                    controller: infoController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.info),
-                      labelText: "Estado",
-                      suffixIcon: Icon(Icons.edit),
-                    ),
-                    onChanged: provider.updateInfo,
-                  ),
-                  const SizedBox(height: 15),
-                  TextField(
-                    readOnly: true,
-                    controller: phoneController,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.phone),
-                      labelText: "Número de Teléfono",
-                    ),
-                  ),
-                  const SizedBox(height: 30),
-                  ElevatedButton(
-                    onPressed: () async {
-                      await provider.saveChanges();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Perfil actualizado")),
-                      );
-                      context.pop();
-                    },
-                    child: const Text("Guardar Cambios"),
-                  ),
-                ],
+                ),
               ),
             ),
           );
