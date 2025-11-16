@@ -42,6 +42,11 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ContactListScreen(),
     ),
     GoRoute(
+      path: '/${AppRoutes.addContact}',
+      name: AppRoutes.addContact,
+      builder: (context, state) => const AddContactScreen(),
+    ),
+    GoRoute(
       path: '/${AppRoutes.chat}',
       name: AppRoutes.chat,
       builder: (context, state) {

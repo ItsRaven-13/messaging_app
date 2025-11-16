@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:messaging_app/features/contacts/data/contact_creation_service.dart';
 import 'package:messaging_app/features/contacts/data/contacts_service.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
+import 'package:messaging_app/features/contacts/domain/usecases/create_contact_usecase.dart';
 
 extension ChunkingExtension<T> on Iterable<T> {
   Iterable<List<T>> chunked(int size) sync* {
@@ -19,6 +21,7 @@ extension ChunkingExtension<T> on Iterable<T> {
 class ContactsProvider extends ChangeNotifier {
   final ContactsService _contactsService = ContactsService();
   StreamSubscription<List<ContactModel>>? _subscription;
+  final CreateContactUseCase _createContactUseCase = ContactCreationService();
 
   List<ContactModel> _contacts = [];
   bool _isLoading = true;
@@ -62,6 +65,13 @@ class ContactsProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<CreateContactResult> createNewContact({
+    required String name,
+    required String phone,
+  }) async {
+    return _createContactUseCase(name: name, phone: phone);
   }
 
   @override

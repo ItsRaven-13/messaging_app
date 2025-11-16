@@ -126,14 +126,17 @@ void _showContactOptions(BuildContext context) {
         child: Wrap(
           children: <Widget>[
             ListTile(
-              leading: const Icon(Icons.group_add),
-              title: const Text('Nuevo Grupo'),
-              onTap: () => Navigator.pop(bc),
-            ),
-            ListTile(
               leading: const Icon(Icons.person_add),
               title: const Text('Nuevo Contacto'),
-              onTap: () => Navigator.pop(bc),
+              onTap: () {
+                context.pop(bc);
+                context.pushNamed(AppRoutes.addContact);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.group_add),
+              title: const Text('Nuevo Grupo'),
+              onTap: () => context.pop(bc),
             ),
           ],
         ),
