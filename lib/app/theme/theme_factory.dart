@@ -238,7 +238,6 @@ class ThemeFactory {
 
   static DialogThemeData _buildDialogThemeData(AppColorPalette palette) =>
       DialogThemeData(
-        backgroundColor: palette.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
