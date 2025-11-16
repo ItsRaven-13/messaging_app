@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
@@ -47,14 +48,15 @@ class NotificationService {
     });
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      final senderId = message.data['senderId'];
-      _handleNotificationClick(senderId);
+      final chatId = message.data['chatId'];
+      _handleNotificationClickFromRemote(chatId, message.data);
     });
 
     final initialMessage = await _messaging.getInitialMessage();
     if (initialMessage != null) {
-      final senderId = initialMessage.data['senderId'];
-      _handleNotificationClick(senderId);
+      final data = initialMessage.data;
+      final chatId = data['chatId'];
+      _handleNotificationClickFromRemote(chatId, data);
     }
 
     final token = await _messaging.getToken();
@@ -93,43 +95,17 @@ class NotificationService {
     final contact = contactsBox.get(senderId);
     final displayName = contact?.name ?? senderName ?? senderId;
 
-    AndroidNotificationDetails androidDetails;
-
-    if (hasImage) {
-      androidDetails = AndroidNotificationDetails(
-        'chat_channel',
-        'Mensajes',
-        channelDescription: 'Notificaciones de mensajes de chat',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: true,
-        enableVibration: true,
-        color: const Color(0xFF4CAF50),
-        ledColor: const Color(0xFF4CAF50),
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        // Añadir un icono personalizado si tienes uno para imágenes
-        // largeIcon: DrawableResourceAndroidBitmap('@mipmap/ic_image_notification'),
-        autoCancel: true,
-        timeoutAfter: 30000,
-      );
-    } else {
-      androidDetails = AndroidNotificationDetails(
-        'chat_channel',
-        'Mensajes',
-        channelDescription: 'Notificaciones de mensajes de chat',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: true,
-        enableVibration: true,
-        color: const Color(0xFF2196F3),
-        ledColor: const Color(0xFF2196F3),
-        ledOnMs: 1000,
-        ledOffMs: 500,
-        autoCancel: true,
-        timeoutAfter: 30000,
-      );
-    }
+    final androidDetails = AndroidNotificationDetails(
+      'chat_channel',
+      'Mensajes',
+      channelDescription: 'Notificaciones de mensajes de chat',
+      importance: Importance.max,
+      priority: Priority.high,
+      playSound: true,
+      enableVibration: true,
+      autoCancel: true,
+      timeoutAfter: 30000,
+    );
 
     final notificationDetails = NotificationDetails(android: androidDetails);
 
@@ -144,6 +120,22 @@ class NotificationService {
 
   Future<void> _handleNotificationClick(String senderId) async {
     if (senderId.isEmpty) return;
+    _openChat(senderId);
+  }
+
+  Future<void> _handleNotificationClickFromRemote(
+    String? chatId,
+    Map<String, dynamic> data,
+  ) async {
+    final senderId = data['senderId'];
+    if (senderId == null) return;
+
+    _openChat(senderId);
+  }
+
+  Future<void> _openChat(String senderId) async {
+    final auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) return;
 
     try {
       final contactsBox = Hive.box<ContactModel>('contacts');
@@ -154,16 +146,15 @@ class NotificationService {
 
         if (contact != null) {
           await contactsBox.put(senderId, contact);
-          debugPrint('Contacto guardado en Hive: ${contact.name}');
         } else {
-          debugPrint('No se encontró el contacto del remitente');
+          debugPrint('Contacto no encontrado');
           return;
         }
       }
 
       _router.goNamed(AppRoutes.chat, extra: contact);
     } catch (e) {
-      debugPrint('Error al abrir chat desde notificación: $e');
+      debugPrint('Error al abrir chat: $e');
     }
   }
 

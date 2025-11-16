@@ -14,6 +14,7 @@ import 'package:messaging_app/features/contacts/presentation/providers/contacts_
 import 'package:messaging_app/firebase_options.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
+import 'package:messaging_app/shared/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main(List<String> args) async {
@@ -24,6 +25,7 @@ Future<void> main(List<String> args) async {
         ? AndroidDebugProvider()
         : AndroidPlayIntegrityProvider(),
   );
+
   await Hive.initFlutter();
   Hive.registerAdapter(ContactModelAdapter());
   Hive.registerAdapter(MessageTypeAdapter());
@@ -31,6 +33,10 @@ Future<void> main(List<String> args) async {
   await Hive.openBox('user_profile');
   await Hive.openBox<ContactModel>('contacts');
   await Hive.openBox<MessageModel>('messages');
+
+  final notificationService = NotificationService();
+  notificationService.setRouter(appRouter);
+  await notificationService.initialize();
 
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   final chatProvider = ChatProvider();
