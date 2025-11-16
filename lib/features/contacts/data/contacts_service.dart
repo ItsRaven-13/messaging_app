@@ -1,3 +1,4 @@
+import 'package:async/async.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_contacts/flutter_contacts.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -42,31 +43,31 @@ class ContactsService {
 
     if (numbers.isEmpty) return;
     const batchSize = 30;
-    final List<DocumentSnapshot> allDocs = [];
-    final numberChunks = numbers.chunked(batchSize);
+    final chunks = numbers.chunked(batchSize);
+    final controllers = <Stream<List<ContactModel>>>[];
 
-    for (final chunk in numberChunks) {
+    for (final chunk in chunks) {
       final query = _firestore
           .collection('users')
           .where('phoneNumber', whereIn: chunk);
-      final snapshot = await query.get();
-      allDocs.addAll(snapshot.docs);
-    }
-    await _contactsBox.clear();
 
-    final contacts = allDocs.map((doc) {
-      final user = doc.data() as Map<String, dynamic>;
-      final contact = ContactModel(
-        uid: doc.id,
-        name: user['name'] ?? 'Usuario',
-        initials: user['initials'] ?? 'U',
-        phoneNumber: user['phoneNumber'] ?? '',
-        colorIndex: user['colorIndex'] ?? 0,
+      controllers.add(
+        query.snapshots().map((snapshot) {
+          final contacts = snapshot.docs.map((doc) {
+            final data = doc.data();
+            final contact = ContactModel.fromMap({...data, 'uid': doc.id});
+            _contactsBox.put(contact.uid, contact);
+            return contact;
+          }).toList();
+          return contacts;
+        }),
       );
-      _contactsBox.put(contact.uid, contact);
-      return contact;
-    }).toList();
-    yield contacts;
+    }
+
+    yield* StreamGroup.merge(controllers).map((list) {
+      final all = _contactsBox.values.toList();
+      return all;
+    });
   }
 
   String _normalizePhone(String number) =>
