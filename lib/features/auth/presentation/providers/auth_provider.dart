@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:messaging_app/core/utils/network_utils.dart';
 import 'package:messaging_app/features/auth/domain/models/user_model.dart';
 import 'package:messaging_app/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,6 +15,8 @@ class AuthProvider extends ChangeNotifier {
   User? _user;
 
   AuthProvider({required this.chatProvider}) {
+    _firestore.settings = const Settings(persistenceEnabled: true);
+
     _user = FirebaseAuth.instance.currentUser;
     FirebaseAuth.instance.authStateChanges().listen((user) {
       _user = user;
@@ -48,9 +49,6 @@ class AuthProvider extends ChangeNotifier {
   Future<void> syncProfileWithFirebase() async {
     final user = await getLocalUserProfile();
     if (user == null || _user == null) return;
-
-    final hasInternet = await NetworkUtils.hasInternetConnection();
-    if (!hasInternet) return;
 
     try {
       await _firestore.collection('users').doc(_user!.uid).set(user.toMap());
