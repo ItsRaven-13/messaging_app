@@ -31,15 +31,19 @@ class ContactsService {
     final phoneContacts = await FlutterContacts.getContacts(
       withProperties: true,
     );
-    final numbers = phoneContacts
-        .map(
-          (c) => c.phones.isNotEmpty
-              ? _normalizePhone(c.phones.first.number)
-              : null,
-        )
-        .whereType<String>()
-        .toSet()
-        .toList();
+
+    final hiveContacts = _contactsBox.values.map((c) => c.phoneNumber).toList();
+
+    final numbers = {
+      ...hiveContacts,
+      ...phoneContacts
+          .map(
+            (c) => c.phones.isNotEmpty
+                ? _normalizePhone(c.phones.first.number)
+                : null,
+          )
+          .whereType<String>(),
+    }.toList()..sort();
 
     if (numbers.isEmpty) return;
     const batchSize = 30;

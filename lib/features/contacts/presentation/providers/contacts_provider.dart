@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messaging_app/features/contacts/data/contact_creation_service.dart';
 import 'package:messaging_app/features/contacts/data/contacts_service.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
@@ -21,6 +22,7 @@ extension ChunkingExtension<T> on Iterable<T> {
 class ContactsProvider extends ChangeNotifier {
   final ContactsService _contactsService = ContactsService();
   StreamSubscription<List<ContactModel>>? _subscription;
+  StreamSubscription? _hiveSubscription;
   final CreateContactUseCase _createContactUseCase = ContactCreationService();
 
   List<ContactModel> _contacts = [];
@@ -33,6 +35,7 @@ class ContactsProvider extends ChangeNotifier {
 
   ContactsProvider() {
     _listenToContacts();
+    _listenToHive();
   }
 
   void _listenToContacts() {
@@ -52,6 +55,25 @@ class ContactsProvider extends ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  void _listenToHive() {
+    final box = Hive.box<ContactModel>('contacts');
+    _contacts = box.values.toList();
+
+    _hiveSubscription = box.watch().listen((event) async {
+      final key = event.key;
+      final existedBefore = key != null && _contacts.any((c) => c.uid == key);
+
+      _contacts = box.values.toList();
+      notifyListeners();
+
+      if (!event.deleted && key != null && !existedBefore) {
+        try {
+          await refreshContacts();
+        } catch (_) {}
+      }
+    });
   }
 
   Future<void> refreshContacts() async {
@@ -77,6 +99,7 @@ class ContactsProvider extends ChangeNotifier {
   @override
   void dispose() {
     _subscription?.cancel();
+    _hiveSubscription?.cancel();
     super.dispose();
   }
 }
