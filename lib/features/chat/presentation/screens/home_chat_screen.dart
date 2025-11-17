@@ -7,6 +7,7 @@ import 'package:messaging_app/features/auth/presentation/providers/auth_provider
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
+import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomeChatScreen extends StatefulWidget {
@@ -34,6 +35,8 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
   @override
   Widget build(BuildContext context) {
     final chatProvider = context.watch<ChatProvider>();
+    final contacts = context.watch<ContactsProvider>().contacts;
+
     final auth = context.read<AuthProvider>();
     final avatarColors = AvatarColors(context).colors;
 
@@ -102,12 +105,13 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                       final chat = recentChats[index];
                       final MessageModel lastMsg =
                           chat['lastMessage'] as MessageModel;
-                      final ContactModel? contact =
-                          chat['contact'] as ContactModel?;
-                      final String contactId = chat['contactId'] as String;
-                      final contactName = contact?.name ?? contactId;
-                      final initials = contact?.initials ?? '??';
-                      final contactColorIndex = contact?.colorIndex ?? 0;
+                      final ContactModel contact = contacts.firstWhere(
+                        (c) => c.uid == chat['contactId'],
+                        orElse: () => chat['contact'],
+                      );
+                      final contactName = contact.name;
+                      final initials = contact.initials;
+                      final contactColorIndex = contact.colorIndex;
                       final localTimestamp = lastMsg.timestamp.toLocal();
                       return Card(
                         child: ListTile(
@@ -168,12 +172,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                             ],
                           ),
                           onTap: () {
-                            final dataToPass =
-                                contact ??
-                                {
-                                  'contactId': contactId,
-                                  'contactName': contactName,
-                                };
+                            final dataToPass = contact;
                             context.pushNamed(
                               AppRoutes.chat,
                               extra: dataToPass,
