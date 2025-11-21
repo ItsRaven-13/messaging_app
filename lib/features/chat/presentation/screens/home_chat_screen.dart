@@ -67,7 +67,7 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
               } else if (value == 'contactos') {
                 context.pushNamed(AppRoutes.contacts);
               } else if (value == 'new_group') {
-                // Lógica para crear un nuevo grupo
+                context.pushNamed(AppRoutes.createGroups);
               } else if (value == 'logout') {
                 await auth.signOut();
                 context.goNamed(AppRoutes.welcome);
