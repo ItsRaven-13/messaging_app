@@ -71,10 +71,5 @@ final GoRouter appRouter = GoRouter(
       name: AppRoutes.profileEdit,
       builder: (context, state) => const ProfileEditScreen(),
     ),
-    GoRoute(
-      path: '/${AppRoutes.noConnection}',
-      name: AppRoutes.noConnection,
-      builder: (context, state) => const NoConnectionScreen(),
-    ),
   ],
 );
