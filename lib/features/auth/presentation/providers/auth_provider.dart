@@ -146,7 +146,11 @@ class AuthProvider extends ChangeNotifier {
     );
 
     await saveUserProfileLocal(newUser);
-    await syncProfileWithFirebase();
+    try {
+      syncProfileWithFirebase();
+    } catch (e) {
+      debugPrint("Error intentando sincronizar perfil: $e");
+    }
   }
 
   String _getInitials(String name) {
