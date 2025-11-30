@@ -5,8 +5,24 @@ import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 
-class WelcomeScreen extends StatelessWidget {
+class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
+
+  @override
+  State<WelcomeScreen> createState() => _WelcomeScreenState();
+}
+
+class _WelcomeScreenState extends State<WelcomeScreen> {
+  bool _navigated = false;
+  final TapGestureRecognizer _termsRecognizer = TapGestureRecognizer();
+  final TapGestureRecognizer _privacyRecognizer = TapGestureRecognizer();
+
+  @override
+  void dispose() {
+    _termsRecognizer.dispose();
+    _privacyRecognizer.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,14 +37,14 @@ class WelcomeScreen extends StatelessWidget {
             );
           }
 
-          final profileComplete = snapshot.data!;
-
-          Future.microtask(() {
-            context.goNamed(
-              profileComplete ? AppRoutes.home : AppRoutes.profileSetup,
-            );
-          });
-
+          if (!_navigated) {
+            _navigated = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              context.goNamed(
+                snapshot.data! ? AppRoutes.home : AppRoutes.profileSetup,
+              );
+            });
+          }
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
@@ -73,7 +89,7 @@ class WelcomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         decoration: TextDecoration.underline,
                       ),
-                      recognizer: TapGestureRecognizer()
+                      recognizer: _termsRecognizer
                         ..onTap = () {
                           debugPrint("Términos de servicio presionado");
                         },
@@ -86,7 +102,7 @@ class WelcomeScreen extends StatelessWidget {
                         fontWeight: FontWeight.w700,
                         decoration: TextDecoration.underline,
                       ),
-                      recognizer: TapGestureRecognizer()
+                      recognizer: _privacyRecognizer
                         ..onTap = () {
                           debugPrint("Política de privacidad presionada");
                         },

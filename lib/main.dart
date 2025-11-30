@@ -1,43 +1,16 @@
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messaging_app/app/app.dart';
+import 'package:messaging_app/app/app_initializer.dart';
 import 'package:messaging_app/app/router/app_router.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart'
     as auth_provider;
-import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
-import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
-import 'package:messaging_app/firebase_options.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:flutter/foundation.dart';
-import 'package:messaging_app/shared/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
-Future<void> main(List<String> args) async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  await FirebaseAppCheck.instance.activate(
-    providerAndroid: kDebugMode
-        ? AndroidDebugProvider()
-        : AndroidPlayIntegrityProvider(),
-  );
-
-  await Hive.initFlutter();
-  Hive.registerAdapter(ContactModelAdapter());
-  Hive.registerAdapter(MessageTypeAdapter());
-  Hive.registerAdapter(MessageModelAdapter());
-  await Hive.openBox('user_profile');
-  await Hive.openBox<ContactModel>('contacts');
-  await Hive.openBox<MessageModel>('messages');
-
-  final notificationService = NotificationService();
-  notificationService.setRouter(appRouter);
-  await notificationService.initialize();
-
-  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await AppInitializer.initialize();
   final chatProvider = ChatProvider();
 
   runApp(
@@ -52,8 +25,4 @@ Future<void> main(List<String> args) async {
       child: MyApp(router: appRouter),
     ),
   );
-}
-
-Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint("Mensaje recibido en background: ${message.notification?.title}");
 }
