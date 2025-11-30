@@ -2,7 +2,6 @@ import 'package:go_router/go_router.dart';
 import 'package:messaging_app/app/router/route_helpers.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/app/router/app_screens.dart';
-import 'package:messaging_app/features/chat/presentation/screens/chat_screen.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 
 final GoRouter appRouter = GoRouter(
@@ -63,14 +62,14 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
+      path: '/${AppRoutes.createGroups}',
+      name: AppRoutes.createGroups,
+      builder: (context, state) => const CreateGroupsScreen(),
+    ),
+    GoRoute(
       path: '/${AppRoutes.profileEdit}',
       name: AppRoutes.profileEdit,
       builder: (context, state) => const ProfileEditScreen(),
-    ),
-    GoRoute(
-      path: '/${AppRoutes.noConnection}',
-      name: AppRoutes.noConnection,
-      builder: (context, state) => const NoConnectionScreen(),
     ),
   ],
 );
