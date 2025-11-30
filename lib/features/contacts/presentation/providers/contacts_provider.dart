@@ -28,33 +28,45 @@ class ContactsProvider extends ChangeNotifier {
   List<ContactModel> _contacts = [];
   bool _isLoading = true;
   String? _error;
+  bool _initialized = false;
 
   List<ContactModel> get contacts => _contacts;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  bool get initialized => _initialized;
 
   ContactsProvider() {
-    _listenToContacts();
     _listenToHive();
   }
 
-  void _listenToContacts() {
+  Future<void> initialize(String myId) async {
+    if (_initialized) return;
+    _listenToContacts(myId);
+    _initialized = true;
+    notifyListeners();
+  }
+
+  void _listenToContacts(String myId) {
     _isLoading = true;
     notifyListeners();
 
-    _subscription = _contactsService.contactsStream().listen(
-      (contactsData) {
-        _contacts = contactsData;
-        _isLoading = false;
-        _error = null;
-        notifyListeners();
-      },
-      onError: (e) {
-        _error = e.toString();
-        _isLoading = false;
-        notifyListeners();
-      },
-    );
+    _subscription?.cancel();
+
+    _subscription = _contactsService
+        .contactsStream(myId)
+        .listen(
+          (contactsData) {
+            _contacts = contactsData;
+            _isLoading = false;
+            _error = null;
+            notifyListeners();
+          },
+          onError: (e) {
+            _error = e.toString();
+            _isLoading = false;
+            notifyListeners();
+          },
+        );
   }
 
   void _listenToHive() {
@@ -62,31 +74,19 @@ class ContactsProvider extends ChangeNotifier {
     _contacts = box.values.toList();
 
     _hiveSubscription = box.watch().listen((event) async {
-      final key = event.key;
-      final existedBefore = key != null && _contacts.any((c) => c.uid == key);
-
       _contacts = box.values.toList();
       notifyListeners();
-
-      if (!event.deleted && key != null && !existedBefore) {
-        try {
-          await refreshContacts();
-        } catch (_) {}
-      }
     });
   }
 
-  Future<void> refreshContacts() async {
-    _isLoading = true;
+  Future<void> cancelAllListeners() async {
+    await _subscription?.cancel();
+    _subscription = null;
+    _initialized = false;
+    _contacts = [];
+    _isLoading = false;
+    _error = null;
     notifyListeners();
-    try {
-      _subscription?.cancel();
-      _listenToContacts();
-    } catch (e) {
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-    }
   }
 
   Future<CreateContactResult> createNewContact({

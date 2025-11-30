@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:go_router/go_router.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
-import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
-import 'package:provider/provider.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -13,7 +11,6 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool _navigated = false;
   final TapGestureRecognizer _termsRecognizer = TapGestureRecognizer();
   final TapGestureRecognizer _privacyRecognizer = TapGestureRecognizer();
 
@@ -26,31 +23,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final auth = Provider.of<AuthProvider>(context, listen: false);
-    if (auth.isLoggedIn) {
-      return FutureBuilder<bool>(
-        future: auth.isProfileCompleteLocal(),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          if (!_navigated) {
-            _navigated = true;
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.goNamed(
-                snapshot.data! ? AppRoutes.home : AppRoutes.profileSetup,
-              );
-            });
-          }
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        },
-      );
-    }
     return Scaffold(
       body: SafeArea(
         child: Padding(

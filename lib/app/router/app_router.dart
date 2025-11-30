@@ -5,7 +5,8 @@ import 'package:messaging_app/app/router/app_screens.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: '/${AppRoutes.welcome}',
+  initialLocation: '/${AppRoutes.home}',
+  redirect: authRedirect,
   routes: <GoRoute>[
     GoRoute(
       path: '/${AppRoutes.welcome}',

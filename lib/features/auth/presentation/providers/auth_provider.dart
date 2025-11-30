@@ -5,16 +5,18 @@ import 'package:messaging_app/features/auth/domain/models/user_model.dart';
 import 'package:messaging_app/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
+import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 
 class AuthProvider extends ChangeNotifier {
   final ChatProvider chatProvider;
+  final ContactsProvider contactsProvider;
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   bool _loading = false;
   String? _verificationId;
   User? _user;
 
-  AuthProvider({required this.chatProvider}) {
+  AuthProvider({required this.chatProvider, required this.contactsProvider}) {
     _firestore.settings = const Settings(persistenceEnabled: true);
 
     _user = FirebaseAuth.instance.currentUser;
@@ -120,6 +122,7 @@ class AuthProvider extends ChangeNotifier {
   Future<void> signOut() async {
     try {
       await chatProvider.cancelAllListeners();
+      await contactsProvider.cancelAllListeners();
       await _authService.signOut();
     } catch (e) {
       debugPrint('Error al cerrar sesión: $e');

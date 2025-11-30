@@ -4,11 +4,33 @@ import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
+import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 
-class ContactListScreen extends StatelessWidget {
+class ContactListScreen extends StatefulWidget {
   const ContactListScreen({super.key});
+
+  @override
+  State<ContactListScreen> createState() => _ContactListScreenState();
+}
+
+class _ContactListScreenState extends State<ContactListScreen> {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final contactsProvider = Provider.of<ContactsProvider>(
+      context,
+      listen: false,
+    );
+    if (authProvider.isLoggedIn && !contactsProvider.initialized) {
+      final myId = authProvider.user!.uid;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        contactsProvider.initialize(myId);
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +142,8 @@ class _ContactListItem extends StatelessWidget {
 void _showContactOptions(BuildContext context) {
   showModalBottomSheet(
     context: context,
-    builder: (BuildContext bc) {
+    builder: (BuildContext modalContext) {
+      // Usamos modalContext para evitar confusión
       return Container(
         padding: const EdgeInsets.all(16),
         child: Wrap(
@@ -129,8 +152,8 @@ void _showContactOptions(BuildContext context) {
               leading: const Icon(Icons.person_add),
               title: const Text('Nuevo Contacto'),
               onTap: () {
-                context.pop(bc);
-                context.pushNamed(AppRoutes.addContact);
+                modalContext.pop();
+                GoRouter.of(context).pushNamed(AppRoutes.addContact);
               },
             ),
           ],

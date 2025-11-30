@@ -12,14 +12,18 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AppInitializer.initialize();
   final chatProvider = ChatProvider();
+  final contactsProvider = ContactsProvider();
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => auth_provider.AuthProvider(chatProvider: chatProvider),
+          create: (_) => auth_provider.AuthProvider(
+            chatProvider: chatProvider,
+            contactsProvider: contactsProvider,
+          ),
         ),
-        ChangeNotifierProvider(create: (_) => ContactsProvider()),
+        ChangeNotifierProvider.value(value: contactsProvider),
         ChangeNotifierProvider.value(value: chatProvider),
       ],
       child: MyApp(router: appRouter),

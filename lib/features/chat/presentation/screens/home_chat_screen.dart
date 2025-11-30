@@ -68,7 +68,9 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                 context.pushNamed(AppRoutes.contacts);
               } else if (value == 'logout') {
                 await auth.signOut();
-                context.goNamed(AppRoutes.welcome);
+                if (context.mounted) {
+                  context.go('/');
+                }
               }
             },
             icon: const Icon(Icons.more_vert),

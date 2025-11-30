@@ -22,7 +22,7 @@ class ContactsService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Box<ContactModel> _contactsBox = Hive.box<ContactModel>('contacts');
 
-  Stream<List<ContactModel>> contactsStream() async* {
+  Stream<List<ContactModel>> contactsStream(String myId) async* {
     yield _contactsBox.values.toList();
 
     final permission = await Permission.contacts.request();
