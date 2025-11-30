@@ -66,8 +66,6 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
                 context.pushNamed(AppRoutes.profileEdit);
               } else if (value == 'contactos') {
                 context.pushNamed(AppRoutes.contacts);
-              } else if (value == 'new_group') {
-                context.pushNamed(AppRoutes.createGroups);
               } else if (value == 'logout') {
                 await auth.signOut();
                 context.goNamed(AppRoutes.welcome);
@@ -82,10 +80,6 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
               const PopupMenuItem<String>(
                 value: 'contactos',
                 child: Text('Contactos'),
-              ),
-              const PopupMenuItem<String>(
-                value: 'new_group',
-                child: Text('Nuevo Grupo'),
               ),
               const PopupMenuItem(
                 value: 'logout',

@@ -62,11 +62,6 @@ final GoRouter appRouter = GoRouter(
       },
     ),
     GoRoute(
-      path: '/${AppRoutes.createGroups}',
-      name: AppRoutes.createGroups,
-      builder: (context, state) => const CreateGroupsScreen(),
-    ),
-    GoRoute(
       path: '/${AppRoutes.profileEdit}',
       name: AppRoutes.profileEdit,
       builder: (context, state) => const ProfileEditScreen(),

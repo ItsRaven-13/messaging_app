@@ -7,4 +7,3 @@ export 'package:messaging_app/features/auth/presentation/screens/profile_setup_s
 export 'package:messaging_app/features/auth/presentation/screens/profile_edit_screen.dart';
 export 'package:messaging_app/features/contacts/presentation/screens/add_contact_screen.dart';
 export 'package:messaging_app/features/chat/presentation/screens/chat_screen.dart';
-export 'package:messaging_app/features/groups/presentation/screens/create_groups_screen.dart';

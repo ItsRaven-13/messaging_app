@@ -133,14 +133,6 @@ void _showContactOptions(BuildContext context) {
                 context.pushNamed(AppRoutes.addContact);
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.group_add),
-              title: const Text('Nuevo Grupo'),
-              onTap: () {
-                context.pop(bc);
-                context.pushNamed(AppRoutes.createGroups);
-              },
-            ),
           ],
         ),
       );
