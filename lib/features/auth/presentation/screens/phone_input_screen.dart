@@ -63,7 +63,6 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
         padding: const EdgeInsets.all(24),
         child: Form(
           key: _formKey,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             children: [
               const Text(
@@ -100,7 +99,9 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
                       keyboardType: TextInputType.phone,
                       maxLength: 10,
                       validator: PhoneValidator.validate,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
                       decoration: const InputDecoration(
+                        prefixIcon: Icon(Icons.phone, color: Colors.grey),
                         hintText: "Número de teléfono",
                         counterText: "",
                         border: OutlineInputBorder(),

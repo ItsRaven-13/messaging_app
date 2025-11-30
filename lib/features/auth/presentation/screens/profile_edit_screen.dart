@@ -63,7 +63,6 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
               child: SingleChildScrollView(
                 child: Form(
                   key: _formKey,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   child: Column(
                     children: [
                       AvatarPreview(
@@ -82,6 +81,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       TextFormField(
                         controller: nameController,
                         validator: ProfileValidator.validate,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         maxLength: 20,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.person),
@@ -95,6 +95,7 @@ class _ProfileEditScreenState extends State<ProfileEditScreen> {
                       TextFormField(
                         controller: infoController,
                         validator: ProfileValidator.validateInfo,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         maxLength: 50,
                         decoration: const InputDecoration(
                           prefixIcon: Icon(Icons.info),

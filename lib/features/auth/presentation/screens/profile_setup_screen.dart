@@ -41,7 +41,6 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
         child: SingleChildScrollView(
           child: Form(
             key: _formKey,
-            autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
               children: [
                 const SizedBox(height: 40),
@@ -62,9 +61,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 const SizedBox(height: 30),
                 TextFormField(
                   controller: _nameController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: ProfileValidator.validate,
                   maxLength: 20,
                   decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person),
                     labelText: 'Nombre de usuario',
                     border: OutlineInputBorder(),
                     counterText: '',
@@ -74,9 +75,11 @@ class _ProfileSetupScreenState extends State<ProfileSetupScreen> {
                 const SizedBox(height: 20),
                 TextFormField(
                   controller: _infoController,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: ProfileValidator.validateInfo,
                   maxLength: 50,
                   decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.info),
                     labelText: 'Info.',
                     border: OutlineInputBorder(),
                     counterText: '',

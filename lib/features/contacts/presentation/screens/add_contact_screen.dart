@@ -31,24 +31,29 @@ class _AddContactScreenState extends State<AddContactScreen> {
       padding: const EdgeInsets.all(20),
       child: Form(
         key: _formKey,
-        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: Column(
           children: [
             TextFormField(
               controller: _nameController,
               validator: ContactValidator.nameValidate,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               decoration: const InputDecoration(
+                prefixIcon: Icon(Icons.person, color: Colors.grey),
                 labelText: "Nombre completo",
                 border: OutlineInputBorder(),
               ),
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField(
-              value: "+52",
+              initialValue: "+52",
               items: const [
-                DropdownMenuItem(value: "+52", child: Text("México")),
+                DropdownMenuItem(
+                  value: "+52",
+                  child: Center(child: Text("México")),
+                ),
               ],
               onChanged: null,
+              isExpanded: true,
             ),
             const SizedBox(height: 16),
             Row(
@@ -66,7 +71,9 @@ class _AddContactScreenState extends State<AddContactScreen> {
                   child: TextFormField(
                     controller: _phoneController,
                     validator: ContactValidator.phoneValidate,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
                     decoration: const InputDecoration(
+                      prefixIcon: Icon(Icons.phone, color: Colors.grey),
                       labelText: "Número de teléfono",
                       border: OutlineInputBorder(),
                     ),
