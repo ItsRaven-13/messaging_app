@@ -1,0 +1,10 @@
+export 'package:messaging_app/features/app_init/presentation/screens/welcome_screen.dart';
+export 'package:messaging_app/features/auth/presentation/screens/phone_input_screen.dart';
+export 'package:messaging_app/features/auth/presentation/screens/otp_verification_screen.dart';
+export 'package:messaging_app/features/chat/presentation/screens/home_chat_screen.dart';
+export 'package:messaging_app/features/contacts/presentation/screens/contact_list_screen.dart';
+export 'package:messaging_app/features/auth/presentation/screens/profile_setup_screen.dart';
+export 'package:messaging_app/features/auth/presentation/screens/profile_edit_screen.dart';
+export 'package:messaging_app/features/contacts/presentation/screens/add_contact_screen.dart';
+export 'package:messaging_app/features/chat/presentation/screens/chat_screen.dart';
+export 'package:messaging_app/features/app_init/presentation/screens/legal_document_screen.dart';

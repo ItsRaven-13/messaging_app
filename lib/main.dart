@@ -1,26 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/screens/login_screen.dart'; 
-import 'package:messaging_app/screens/main_chat_screen.dart';
+import 'package:messaging_app/app/app.dart';
+import 'package:messaging_app/app/app_initializer.dart';
+import 'package:messaging_app/app/router/app_router.dart';
+import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart'
+    as auth_provider;
+import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
+import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
+import 'package:provider/provider.dart';
 
-// Asegúrate de tener esta pantalla creada
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await AppInitializer.initialize();
+  final chatProvider = ChatProvider();
+  final contactsProvider = ContactsProvider();
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Messaging App',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        // Puedes definir un tema global aquí si lo necesitas
-        primarySwatch: Colors.blue,
-      ),
-      home: const LoginScreen(),
-    );
-  }
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => auth_provider.AuthProvider(
+            chatProvider: chatProvider,
+            contactsProvider: contactsProvider,
+          ),
+        ),
+        ChangeNotifierProvider.value(value: contactsProvider),
+        ChangeNotifierProvider.value(value: chatProvider),
+      ],
+      child: MyApp(router: appRouter),
+    ),
+  );
 }

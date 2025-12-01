@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:messaging_app/theme/app_colors.dart';
+import 'package:messaging_app/core/constants/app_colors.dart';
 
 // Definición simple de un Grupo para simular datos
 class Group {
@@ -24,24 +24,23 @@ List<Group> mockGroups = [
     id: 'g1',
     name: 'Grupo Familia',
     lastActivity: '3 miembros',
-    avatarColor: AppColors.avatarYellow,
+    avatarColor: AppColorsLight.avatarYellow,
   ),
   Group(
     id: 'g2',
     name: 'Amigos de la Uni',
     lastActivity: '2 miembros',
-    avatarColor: AppColors.avatarBlue,
+    avatarColor: AppColorsLight.avatarBlue,
     icon: Icons.school,
   ),
   Group(
     id: 'g3',
     name: 'Trabajo - Proyectos',
     lastActivity: '7 miembros',
-    avatarColor: AppColors.avatarPink,
+    avatarColor: AppColorsLight.avatarPink,
     icon: Icons.work,
   ),
 ];
-
 
 class GroupListScreen extends StatelessWidget {
   const GroupListScreen({super.key});
@@ -54,7 +53,10 @@ class GroupListScreen extends StatelessWidget {
         flexibleSpace: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.gradientStart, AppColors.gradientEnd],
+              colors: [
+                AppColorsLight.gradientStart,
+                AppColorsLight.gradientEnd,
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -62,22 +64,25 @@ class GroupListScreen extends StatelessWidget {
         ),
         title: const Text(
           'Grupos',
-          style: TextStyle(color: AppColors.textColor, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            color: AppColorsLight.textPrimary,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
+          icon: const Icon(Icons.arrow_back, color: AppColorsLight.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: AppColors.textColor),
+            icon: const Icon(Icons.search, color: AppColorsLight.textPrimary),
             onPressed: () {},
           ),
         ],
       ),
       body: Container(
-        color: AppColors.lightBlueBackground,
+        color: AppColorsLight.lightBlueBackground,
         child: ListView.builder(
           itemCount: mockGroups.length,
           itemBuilder: (context, index) {
@@ -100,9 +105,7 @@ class GroupListItem extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       color: Colors.white,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -123,7 +126,10 @@ class GroupListItem extends StatelessWidget {
                   Text(
                     group.name,
                     style: const TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textColor),
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: AppColorsLight.textPrimary,
+                    ),
                   ),
                   const SizedBox(height: 4),
                   Text(
