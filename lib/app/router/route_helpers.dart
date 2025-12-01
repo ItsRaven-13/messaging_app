@@ -21,13 +21,16 @@ class OtpVerificationArgs {
 Future<String?> authRedirect(BuildContext context, GoRouterState state) async {
   final auth = context.read<AuthProvider>();
   final isLoggedIn = auth.isLoggedIn;
-  const authRoutes = [
+  const authRouteNames = [
     AppRoutes.welcome,
     AppRoutes.phoneInput,
     AppRoutes.otpVerification,
+    AppRoutes.legalDocument,
   ];
-  final isGoingToAuthRoute = authRoutes.contains(
-    state.matchedLocation.replaceAll('/', ''),
+  final authPaths = authRouteNames.map((name) => '/$name').toList();
+
+  final isGoingToAuthRoute = authPaths.any(
+    (path) => state.matchedLocation.startsWith(path),
   );
 
   if (!isLoggedIn) {

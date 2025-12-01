@@ -63,7 +63,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       recognizer: _termsRecognizer
                         ..onTap = () {
-                          debugPrint("Términos de servicio presionado");
+                          context.pushNamed(
+                            AppRoutes.legalDocument,
+                            pathParameters: {'type': 'terms'},
+                          );
                         },
                     ),
                     const TextSpan(text: ' y la '),
@@ -76,7 +79,10 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       ),
                       recognizer: _privacyRecognizer
                         ..onTap = () {
-                          debugPrint("Política de privacidad presionada");
+                          context.pushNamed(
+                            AppRoutes.legalDocument,
+                            pathParameters: {'type': 'privacy'},
+                          );
                         },
                     ),
                     const TextSpan(text: ' de Zaap.'),

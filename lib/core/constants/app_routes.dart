@@ -8,4 +8,5 @@ class AppRoutes {
   static const addContact = 'addContact';
   static const chat = 'chat';
   static const profileEdit = 'profileEdit';
+  static const legalDocument = 'legalDocument';
 }

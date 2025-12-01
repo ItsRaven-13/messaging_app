@@ -14,6 +14,17 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const WelcomeScreen(),
     ),
     GoRoute(
+      path: '/${AppRoutes.legalDocument}/:type',
+      name: AppRoutes.legalDocument,
+      builder: (context, state) {
+        final typeString = state.pathParameters['type'];
+        final type = typeString == 'privacy'
+            ? LegalDocumentType.privacy
+            : LegalDocumentType.terms;
+        return LegalDocumentScreen(type: type);
+      },
+    ),
+    GoRoute(
       path: '/${AppRoutes.phoneInput}',
       name: AppRoutes.phoneInput,
       builder: (context, state) => const PhoneInputScreen(),
