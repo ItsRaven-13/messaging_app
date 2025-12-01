@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:messaging_app/app/theme/theme_extensions.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
+import 'package:messaging_app/core/widgets/search_app_bar_widget.dart';
 import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
@@ -38,33 +39,25 @@ class _ContactListScreenState extends State<ContactListScreen> {
       builder: (context, provider, _) {
         return Scaffold(
           backgroundColor: context.colors.lightBlueBackground,
-          appBar: AppBar(
-            flexibleSpace: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    context.colors.gradientStart,
-                    context.colors.gradientEnd,
-                  ],
-                ),
-              ),
-            ),
-            title: const Text('Contactos'),
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => context.pop(),
-            ),
-            actions: [
-              IconButton(icon: const Icon(Icons.search), onPressed: () {}),
-            ],
+          appBar: SearchAppBar(
+            titleText: 'Contactos',
+            onBackButtonPressed: () => context.pop(),
+            onSearchChanged: (query) {
+              provider.setSearchQuery(query);
+            },
           ),
           body: provider.isLoading
               ? const Center(child: CircularProgressIndicator())
               : provider.error != null
               ? Center(child: Text(provider.error!))
               : provider.contacts.isEmpty
-              ? const Center(
-                  child: Text("Aun no tienes contactos que usen la app"),
+              ? Center(
+                  child: Text(
+                    provider.searchQuery.isNotEmpty
+                        ? "No se encontraron contactos para '${provider.searchQuery}'"
+                        : "Aun no tienes contactos que usen la app",
+                    textAlign: TextAlign.center,
+                  ),
                 )
               : ListView.builder(
                   itemCount: provider.contacts.length,

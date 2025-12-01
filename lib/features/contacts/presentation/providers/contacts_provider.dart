@@ -25,12 +25,27 @@ class ContactsProvider extends ChangeNotifier {
   StreamSubscription? _hiveSubscription;
   final CreateContactUseCase _createContactUseCase = ContactCreationService();
 
-  List<ContactModel> _contacts = [];
+  List<ContactModel> _allContacts = [];
+  String _searchQuery = '';
+
   bool _isLoading = true;
   String? _error;
   bool _initialized = false;
 
-  List<ContactModel> get contacts => _contacts;
+  List<ContactModel> get contacts {
+    if (_searchQuery.isEmpty) {
+      return _allContacts;
+    }
+    final searchLower = _searchQuery.toLowerCase();
+    return _allContacts.where((contact) {
+      final nameLower = contact.name.toLowerCase();
+      final phoneLower = contact.phoneNumber.toLowerCase();
+      return nameLower.contains(searchLower) ||
+          phoneLower.contains(searchLower);
+    }).toList();
+  }
+
+  String get searchQuery => _searchQuery;
   bool get isLoading => _isLoading;
   String? get error => _error;
   bool get initialized => _initialized;
@@ -56,7 +71,7 @@ class ContactsProvider extends ChangeNotifier {
         .contactsStream(myId)
         .listen(
           (contactsData) {
-            _contacts = contactsData;
+            _allContacts = contactsData;
             _isLoading = false;
             _error = null;
             notifyListeners();
@@ -69,12 +84,17 @@ class ContactsProvider extends ChangeNotifier {
         );
   }
 
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
   void _listenToHive() {
     final box = Hive.box<ContactModel>('contacts');
-    _contacts = box.values.toList();
+    _allContacts = box.values.toList();
 
     _hiveSubscription = box.watch().listen((event) async {
-      _contacts = box.values.toList();
+      _allContacts = box.values.toList();
       notifyListeners();
     });
   }
@@ -83,7 +103,7 @@ class ContactsProvider extends ChangeNotifier {
     await _subscription?.cancel();
     _subscription = null;
     _initialized = false;
-    _contacts = [];
+    _allContacts = [];
     _isLoading = false;
     _error = null;
     notifyListeners();
