@@ -123,7 +123,7 @@ class AuthProvider extends ChangeNotifier {
     try {
       await chatProvider.cancelAllListeners();
       await contactsProvider.cancelAllListeners();
-      await _authService.signOut();
+      _authService.signOut();
     } catch (e) {
       debugPrint('Error al cerrar sesión: $e');
     }
