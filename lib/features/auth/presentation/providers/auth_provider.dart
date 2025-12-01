@@ -4,7 +4,9 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:messaging_app/features/auth/domain/models/user_model.dart';
 import 'package:messaging_app/features/auth/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
+import 'package:messaging_app/features/contacts/domain/models/contact_model.dart';
 import 'package:messaging_app/features/contacts/presentation/providers/contacts_provider.dart';
 
 class AuthProvider extends ChangeNotifier {
@@ -137,17 +139,23 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint('Error al cerrar sesión: $e');
     }
-    //await _clearLocalData();
+    await _clearLocalData();
   }
 
-  /*Future<void> _clearLocalData() async {
+  Future<void> _clearLocalData() async {
     try {
-      final box = Hive.box('user_profile');
-      await box.delete('current_user');
+      final userBox = Hive.box('user_profile');
+      await userBox.clear();
+      final contactsBox = Hive.box<ContactModel>('contacts');
+      await contactsBox.clear();
+      final messagesBox = Hive.box<MessageModel>('messages');
+      await messagesBox.clear();
+
+      debugPrint('Datos locales de Hive limpiados.');
     } catch (e) {
       debugPrint('Error limpiando datos locales: $e');
     }
-  }*/
+  }
 
   Future<void> saveUserProfile({
     required String name,
