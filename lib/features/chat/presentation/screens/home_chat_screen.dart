@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:messaging_app/app/theme/theme_extensions.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
+import 'package:messaging_app/core/widgets/confirmation_dialog.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
@@ -67,6 +68,13 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
               } else if (value == 'contactos') {
                 context.pushNamed(AppRoutes.contacts);
               } else if (value == 'logout') {
+                final confirmed = await showConfirmationDialog(
+                  context: context,
+                  title: 'Cerrar Sesión',
+                  content: '¿Estás seguro de que deseas cerrar la sesión?',
+                  confirmText: 'Cerrar Sesión',
+                );
+                if (!confirmed) return;
                 await auth.signOut();
                 if (context.mounted) {
                   context.go('/');
