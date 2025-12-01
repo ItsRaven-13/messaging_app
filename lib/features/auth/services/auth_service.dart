@@ -65,24 +65,33 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    final user = _auth.currentUser;
-
-    if (user != null) {
-      try {
-        await _firestore.collection('users').doc(user.uid).update({
-          'fcmToken': FieldValue.delete(),
-        });
-      } catch (e) {
-        debugPrint('No se pudo borrar el fcmToken: $e');
-      }
-    }
-
     try {
-      await FirebaseMessaging.instance.deleteToken();
+      await _auth.signOut();
+      _attemptCleanupInBackground();
     } catch (e) {
-      debugPrint('Error eliminando token local: $e');
+      debugPrint('Error durante signOut: $e');
     }
+  }
 
-    await _auth.signOut();
+  Future<void> _attemptCleanupInBackground() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        try {
+          await _firestore.collection('users').doc(user.uid).update({
+            'fcmToken': FieldValue.delete(),
+          });
+        } catch (e) {
+          debugPrint('No se pudo borrar fcmToken de Firestore: $e');
+        }
+        try {
+          await FirebaseMessaging.instance.deleteToken();
+        } catch (e) {
+          debugPrint('Error eliminando token FCM local: $e');
+        }
+      }
+    } catch (e) {
+      debugPrint('Error en limpieza en segundo plano: $e');
+    }
   }
 }

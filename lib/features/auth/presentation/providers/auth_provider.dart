@@ -120,16 +120,26 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    await chatProvider.cancelAllListeners();
+    await contactsProvider.cancelAllListeners();
+    _user = null;
+    notifyListeners();
     try {
-      await chatProvider.cancelAllListeners();
-      await contactsProvider.cancelAllListeners();
-      _authService.signOut();
+      await _authService.signOut();
     } catch (e) {
       debugPrint('Error al cerrar sesión: $e');
     }
-    _user = null;
-    notifyListeners();
+    //await _clearLocalData();
   }
+
+  /*Future<void> _clearLocalData() async {
+    try {
+      final box = Hive.box('user_profile');
+      await box.delete('current_user');
+    } catch (e) {
+      debugPrint('Error limpiando datos locales: $e');
+    }
+  }*/
 
   Future<void> saveUserProfile({
     required String name,
