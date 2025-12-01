@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/styles/pin_theme_styles.dart';
 import 'package:messaging_app/features/auth/domain/validators/otp_validator.dart';
 import 'package:pinput/pinput.dart';
 import 'package:provider/provider.dart';
-import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/utils/network_utils.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 
@@ -31,9 +31,6 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
     if (widget.autodetectedSmsCode != null &&
         widget.autodetectedSmsCode!.length == 6) {
       _codeController.text = widget.autodetectedSmsCode!;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.goNamed(AppRoutes.home);
-      });
     }
   }
 
@@ -56,14 +53,9 @@ class _OtpVerificationScreenState extends State<OtpVerificationScreen> {
 
     auth.verifyCode(
       smsCode: smsCode,
-      onSuccess: (_) async {
-        bool profileComplete = await auth.isProfileCompleteLocal();
+      onSuccess: (_) {
         if (context.mounted) {
-          if (profileComplete) {
-            context.goNamed(AppRoutes.home);
-          } else {
-            context.goNamed(AppRoutes.profileSetup);
-          }
+          context.goNamed(AppRoutes.home);
         }
       },
       onError: (error) => ScaffoldMessenger.of(

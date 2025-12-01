@@ -36,7 +36,7 @@ Future<String?> authRedirect(BuildContext context, GoRouterState state) async {
   if (!isLoggedIn) {
     return isGoingToAuthRoute ? null : '/${AppRoutes.welcome}';
   } else {
-    final isProfileComplete = await auth.isProfileCompleteLocal();
+    bool isProfileComplete = await auth.isProfileCompleteLocal();
     if (!isProfileComplete && state.matchedLocation == '/${AppRoutes.home}') {
       return '/${AppRoutes.profileSetup}';
     }

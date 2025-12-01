@@ -60,6 +60,14 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<bool> synchronizeProfile() async {
+    bool isLocalComplete = await isProfileCompleteLocal();
+    if (isLocalComplete) {
+      return true;
+    }
+    return await loadProfileFromFirebaseAndSaveLocal();
+  }
+
   void _syncProfileOnLogin() async {
     if (await isProfileCompleteLocal()) {
       await syncProfileWithFirebase();
@@ -110,9 +118,9 @@ class AuthProvider extends ChangeNotifier {
     try {
       final userCredential = await _authService.signInWithSmsCode(smsCode);
       _user = userCredential.user;
+      await synchronizeProfile();
       _setLoading(false);
       onSuccess(userCredential.user!);
-      _syncProfileOnLogin();
     } catch (e) {
       _setLoading(false);
       onError(e.toString());
@@ -164,6 +172,25 @@ class AuthProvider extends ChangeNotifier {
     } catch (e) {
       debugPrint("Error intentando sincronizar perfil: $e");
     }
+  }
+
+  Future<bool> loadProfileFromFirebaseAndSaveLocal() async {
+    if (_user == null) return false;
+    try {
+      final docSnapshot = await _firestore
+          .collection('users')
+          .doc(_user!.uid)
+          .get();
+
+      if (docSnapshot.exists && docSnapshot.data() != null) {
+        final userModel = UserModel.fromMap(docSnapshot.data()!);
+        await saveUserProfileLocal(userModel);
+        return true;
+      }
+    } catch (e) {
+      debugPrint('Error al cargar perfil desde Firebase: $e');
+    }
+    return false;
   }
 
   String _getInitials(String name) {
