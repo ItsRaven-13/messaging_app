@@ -15,10 +15,28 @@ class ChatProvider extends ChangeNotifier {
   final _imageService = ImageService();
   final _userService = UserService();
   Box<MessageModel>? _messageBox;
+  List<Map<String, dynamic>> _allRecentChats = [];
+  String _searchQuery = '';
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
-  List<Map<String, dynamic>> _recentChats = [];
-  List<Map<String, dynamic>> get recentChats => _recentChats;
+  List<Map<String, dynamic>> get recentChats {
+    if (_searchQuery.isEmpty) {
+      return _allRecentChats;
+    }
+    final searchLower = _searchQuery.toLowerCase();
+    return _allRecentChats.where((chat) {
+      final ContactModel? contact = chat['contact'];
+      final MessageModel lastMessage = chat['lastMessage'] as MessageModel;
+      final nameMatch =
+          contact?.name.toLowerCase().contains(searchLower) ?? false;
+      final messageMatch = lastMessage.text.toLowerCase().contains(searchLower);
+
+      return nameMatch || messageMatch;
+    }).toList();
+  }
+
+  String get searchQuery => _searchQuery;
+
   StreamSubscription<List<MessageModel>>? _allChatsSubscription;
   final Map<String, StreamSubscription<List<MessageModel>>> _chatSubscriptions =
       {};
@@ -194,6 +212,11 @@ class ChatProvider extends ChangeNotifier {
     }
   }
 
+  void setSearchQuery(String query) {
+    _searchQuery = query;
+    notifyListeners();
+  }
+
   void _setUploadingImage(bool uploading) {
     _isUploadingImage = uploading;
     notifyListeners();
@@ -271,7 +294,7 @@ class ChatProvider extends ChangeNotifier {
       ),
     );
 
-    _recentChats = calculatedChats;
+    _allRecentChats = calculatedChats;
     notifyListeners();
   }
 

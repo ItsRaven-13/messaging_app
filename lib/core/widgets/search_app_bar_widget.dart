@@ -3,14 +3,14 @@ import 'package:messaging_app/app/theme/theme_extensions.dart';
 
 class SearchAppBar extends StatefulWidget implements PreferredSizeWidget {
   final String titleText;
-  final VoidCallback onBackButtonPressed;
+  final VoidCallback? onBackButtonPressed;
   final ValueChanged<String> onSearchChanged;
   final List<Widget>? actions;
 
   const SearchAppBar({
     super.key,
     required this.titleText,
-    required this.onBackButtonPressed,
+    this.onBackButtonPressed,
     required this.onSearchChanged,
     this.actions,
   });
@@ -63,6 +63,15 @@ class _SearchAppBarState extends State<SearchAppBar> {
       ),
       if (!_isSearching && widget.actions != null) ...widget.actions!,
     ];
+    Widget? buildLeadingWidget() {
+      if (widget.onBackButtonPressed == null) {
+        return null;
+      }
+      return IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: _isSearching ? _toggleSearch : widget.onBackButtonPressed,
+      );
+    }
 
     return AppBar(
       flexibleSpace: Container(
@@ -72,10 +81,7 @@ class _SearchAppBarState extends State<SearchAppBar> {
           ),
         ),
       ),
-      leading: IconButton(
-        icon: Icon(Icons.arrow_back),
-        onPressed: _isSearching ? _toggleSearch : widget.onBackButtonPressed,
-      ),
+      leading: buildLeadingWidget(),
       title: _isSearching
           ? TextField(
               controller: _searchController,

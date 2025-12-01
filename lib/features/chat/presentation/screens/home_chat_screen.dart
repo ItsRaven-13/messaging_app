@@ -4,6 +4,7 @@ import 'package:messaging_app/app/theme/theme_extensions.dart';
 import 'package:messaging_app/core/constants/app_routes.dart';
 import 'package:messaging_app/core/constants/avatar_colors.dart';
 import 'package:messaging_app/core/widgets/confirmation_dialog.dart';
+import 'package:messaging_app/core/widgets/search_app_bar_widget.dart';
 import 'package:messaging_app/features/auth/presentation/providers/auth_provider.dart';
 import 'package:messaging_app/features/chat/domain/models/message_model.dart';
 import 'package:messaging_app/features/chat/presentation/providers/chat_provider.dart';
@@ -42,25 +43,16 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
     final avatarColors = AvatarColors(context).colors;
 
     final recentChats = chatProvider.recentChats;
+    final searchQuery = chatProvider.searchQuery;
 
     return Scaffold(
       backgroundColor: context.colors.lightBlueBackground,
-      appBar: AppBar(
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                context.colors.gradientStart,
-                context.colors.gradientEnd,
-              ],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        title: const Text('Mensajería'),
+      appBar: SearchAppBar(
+        titleText: 'Mensajería',
+        onSearchChanged: (query) {
+          chatProvider.setSearchQuery(query);
+        },
         actions: [
-          IconButton(icon: const Icon(Icons.search), onPressed: () {}),
           PopupMenuButton<String>(
             onSelected: (value) async {
               if (value == 'perfil') {
@@ -102,7 +94,14 @@ class _HomeChatScreenState extends State<HomeChatScreen> {
       body: !chatProvider.isInitialized
           ? const Center(child: CircularProgressIndicator())
           : (recentChats.isEmpty
-                ? const Center(child: Text('No hay mensajes aún'))
+                ? Center(
+                    child: Text(
+                      searchQuery.isNotEmpty
+                          ? "No se encontraron conversaciones para '$searchQuery'"
+                          : 'No hay mensajes aún',
+                      textAlign: TextAlign.center,
+                    ),
+                  )
                 : ListView.builder(
                     itemCount: recentChats.length,
                     itemBuilder: (_, index) {
