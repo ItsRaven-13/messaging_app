@@ -18,6 +18,20 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
 
+  void _showError(String error) {
+    if (mounted) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error)));
+    }
+  }
+
+  void _handleSuccessfulVerification() {
+    if (mounted) {
+      context.goNamed(AppRoutes.home);
+    }
+  }
+
   void _sendCode(AuthProvider auth) async {
     final phoneNumber = "+52${_phoneController.text.trim()}";
     final hasInternet = await NetworkUtils.hasInternetConnection();
@@ -36,15 +50,14 @@ class _PhoneInputScreenState extends State<PhoneInputScreen> {
       ),
       onVerified: (user, smsCode) {
         if (smsCode != null) {
-          context.goNamed(
-            AppRoutes.otpVerification,
-            extra: OtpVerificationArgs(
-              phoneNumber,
-              autodetectedSmsCode: smsCode,
-            ),
+          auth.verifyCode(
+            smsCode: smsCode,
+            onSuccess: (_) => _handleSuccessfulVerification(),
+            onError: (error) =>
+                _showError("Error al verificar código autodetectado: $error"),
           );
         } else {
-          context.goNamed(AppRoutes.home);
+          _handleSuccessfulVerification();
         }
       },
       onError: (error) => ScaffoldMessenger.of(
